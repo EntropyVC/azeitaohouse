@@ -248,6 +248,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
           <div class="f"><label for="lng">Longitude</label><input id="lng" name="lng"></div>
         </div>
         <input type="hidden" id="pinLocked" name="pinLocked"><div class="f"><label for="pinStatus">Pin status</label><select id="pinStatus" name="pinStatus"><option value="">Not placed</option><option value="approximate">Approximate, needs confirming</option><option value="confirmed">Confirmed on satellite</option></select></div>
+        <div class="f"><label>Plot boundary</label><div class="actions" style="margin-top:0"><button type="button" class="btn" id="drawBtn">Draw boundary</button><button type="button" class="btn" id="finishBtn" hidden>Finish</button><button type="button" class="btn" id="clearBoundaryBtn" hidden>Clear</button><span class="muted small" id="boundaryInfo"></span></div></div>
         <div class="f"><label for="listing">Listing link (Airbnb / Booking)</label><input id="listing" name="listing" type="url" placeholder="https://"></div>
         <div class="links" id="links"></div>
       </fieldset>
@@ -440,7 +441,7 @@ function renderPins(){
   $("mapwrap").classList.toggle("adding",placing||adding);
 }
 map.on("click",e=>{
-  if(!placing&&!adding) return;
+  if(drawing||(!placing&&!adding)) return;
   const lat=e.latlng.lat.toFixed(6),lng=e.latlng.lng.toFixed(6);
   if(adding){
     adding=false;$("addBtn").classList.remove("on");
@@ -453,6 +454,57 @@ map.on("click",e=>{
     props[sel]={...props[sel],lat,lng,pinStatus:"confirmed",updated:Date.now()};$("lat").value=lat;$("lng").value=lng;$("pinStatus").value="confirmed";$("locateBtn").textContent="Move pin";store();renderAll();renderTodo(current());
   }
 });
+
+// ---------- plot boundaries ----------
+let drawing=false, drawPts=[], drawLayer=null, drawDots=[], boundaryLayers={};
+function areaM2(pts){ // spherical polygon area, good enough for plots
+  if(pts.length<3) return 0; const R=6378137; let a=0;
+  for(let i=0;i<pts.length;i++){const p1=pts[i],p2=pts[(i+1)%pts.length];a+=(p2[1]-p1[1])*Math.PI/180*(2+Math.sin(p1[0]*Math.PI/180)+Math.sin(p2[0]*Math.PI/180))}
+  return Math.abs(a*R*R/2);
+}
+const fmtArea=m2=>m2>=10000?(m2/10000).toFixed(2)+" ha":Math.round(m2)+" m²";
+function renderBoundaries(){
+  for(const id in boundaryLayers){if(!props[id]||!props[id].boundary){map.removeLayer(boundaryLayers[id]);delete boundaryLayers[id]}}
+  for(const p of Object.values(props)){
+    if(!p.boundary||p.boundary.length<3) continue;
+    const style={color:lightHex(p),weight:p.id===sel?3:2,fillColor:sColor(p.status),fillOpacity:p.id===sel?.25:.12,dashArray:p.boundaryStatus==="confirmed"?null:"6 4"};
+    let l=boundaryLayers[p.id]; if(!l){l=L.polygon(p.boundary,style).addTo(map);l.on("click",()=>{if(!drawing&&!placing&&!adding)open(p.id)});boundaryLayers[p.id]=l}
+    else{l.setLatLngs(p.boundary);l.setStyle(style)}
+    l.bindTooltip(title(p)+" · "+fmtArea(areaM2(p.boundary)),{sticky:true});
+  }
+}
+function renderBoundaryUI(p){
+  const has=p.boundary&&p.boundary.length>=3;
+  $("drawBtn").textContent=has?"Redraw boundary":"Draw boundary"; $("drawBtn").hidden=drawing; $("finishBtn").hidden=!drawing; $("clearBoundaryBtn").hidden=!has||drawing;
+  $("boundaryInfo").textContent=drawing?(drawPts.length+" points, tap the corners of the plot then Finish"):has?fmtArea(areaM2(p.boundary))+(p.plotArea?"":""):"No boundary drawn";
+}
+function startDraw(){
+  if(!sel) return; drawing=true; drawPts=[]; placing=false; adding=false;
+  if(window.innerWidth<=760){$("drawer").hidden=true;$("list").hidden=true}
+  const p=props[sel]; const lat=parseFloat(p.lat),lng=parseFloat(p.lng); if(!isNaN(lat)){map.setView([lat,lng],Math.max(map.getZoom(),18));sat.addTo(map)}
+  $("mapwrap").classList.add("adding"); renderBoundaryUI(p); showDrawBar(); toast("Tap each corner of the plot. Finish when you are back at the start.");
+}
+function showDrawBar(){
+  let bar=$("drawBar"); if(!bar){bar=document.createElement("div");bar.id="drawBar";bar.className="hint";bar.style.left="12px";bar.style.bottom="calc(70px + env(safe-area-inset-bottom,0px))";bar.style.zIndex="1160";bar.style.maxWidth="none";bar.style.display="flex";bar.style.gap="8px";bar.style.alignItems="center";bar.innerHTML='<span id="drawCount">0 points</span><button type="button" class="btn" id="drawUndo">Undo</button><button type="button" class="btn" id="drawCancel">Cancel</button><button type="button" class="btn primary" id="drawDone">Finish</button>';$("mapwrap").appendChild(bar);
+    $("drawUndo").onclick=()=>{drawPts.pop();redrawTemp()}; $("drawCancel").onclick=()=>endDraw(false); $("drawDone").onclick=()=>endDraw(true)}
+  bar.hidden=false;
+}
+function redrawTemp(){
+  if(drawLayer){map.removeLayer(drawLayer);drawLayer=null} drawDots.forEach(d=>map.removeLayer(d)); drawDots=[];
+  if(drawPts.length>=2) drawLayer=L.polyline(drawPts.concat(drawPts.length>=3?[drawPts[0]]:[]),{color:"#ff0",weight:2,dashArray:"4 4"}).addTo(map);
+  drawPts.forEach(pt=>drawDots.push(L.circleMarker(pt,{radius:5,color:"#ff0",fillColor:"#000",fillOpacity:1}).addTo(map)));
+  const c=$("drawCount"); if(c) c.textContent=drawPts.length+" point"+(drawPts.length===1?"":"s")+(drawPts.length>=3?" · "+fmtArea(areaM2(drawPts)):"");
+}
+async function endDraw(keep){
+  const bar=$("drawBar"); if(bar) bar.hidden=true; $("mapwrap").classList.remove("adding");
+  if(keep&&drawPts.length>=3&&sel){props[sel]={...props[sel],boundary:drawPts.map(p=>[+p[0].toFixed(6),+p[1].toFixed(6)]),boundaryStatus:"confirmed",plotArea:Math.round(areaM2(drawPts)),updated:Date.now()};await store();toast("Boundary saved, "+fmtArea(areaM2(drawPts)))}
+  else if(keep) toast("Need at least three points");
+  drawing=false; drawPts=[]; if(drawLayer){map.removeLayer(drawLayer);drawLayer=null} drawDots.forEach(d=>map.removeLayer(d)); drawDots=[];
+  renderAll(); if(sel&&props[sel]) renderBoundaryUI(props[sel]);
+}
+$("drawBtn").onclick=startDraw; $("finishBtn").onclick=()=>endDraw(true);
+$("clearBoundaryBtn").onclick=async()=>{if(!sel)return;const p={...props[sel]};delete p.boundary;delete p.boundaryStatus;delete p.plotArea;p.updated=Date.now();props[sel]=p;await store();renderBoundaries();renderBoundaryUI(p)};
+map.on("click",e=>{if(!drawing) return; drawPts.push([e.latlng.lat,e.latlng.lng]); redrawTemp()});
 
 // ---------- geocoding (Nominatim) ----------
 async function geocode(q){
@@ -490,14 +542,14 @@ function renderList(){
     const m=missing(p);
     b.querySelector(".addr").textContent=title(p);
     b.querySelector(".meta").textContent=[p.rnalName&&norm(p.rnalName)!==norm(p.name)?"AL: "+p.rnalName:null,(p.address||"").split(",")[0]||null,p.owner||(p.keyholder?"Held by "+p.keyholder.split(" (")[0]:"Owner unknown"),sLabel(p.status)].filter(Boolean).join(" · ");
-    b.querySelector(".ref").textContent=m.pin?"no pin":m.confirm?"pin approx.":(p.al||((p.source||"register")!=="register"?"no AL":""));
+    b.querySelector(".ref").textContent=(p.boundary?fmtArea(areaM2(p.boundary))+" · ":"")+(m.pin?"no pin":m.confirm?"pin approx.":(p.al||((p.source||"register")!=="register"?"no AL":"")));
     b.onclick=()=>{open(p.id);const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(!isNaN(lat))map.panTo([lat,lng])}; rows.appendChild(b);
   }
   const c={}; for(const p of Object.values(props)) c[p.status||"none"]=(c[p.status||"none"]||0)+1;
   const nc=Object.values(props).filter(p=>light(p)==="green").length, na=Object.values(props).filter(p=>light(p)==="amber").length;
   $("counts").innerHTML=`<span><b>${Object.keys(props).length}</b> properties</span><span><b>${nc}</b> green</span><span><b>${na}</b> amber</span>`+STATUSES.filter(s=>c[s[0]]).map(s=>`<span><b>${c[s[0]]}</b> ${s[1].toLowerCase()}</span>`).join("");
 }
-function renderAll(){renderList();renderPins()}
+function renderAll(){renderList();renderPins();renderBoundaries()}
 
 // ---------- drawer ----------
 function open(id){
@@ -507,7 +559,7 @@ function open(id){
   for(const f of FIELDS){$(f).value=f==="pinLocked"?(p.pinLocked?"1":""):(p[f]??(f==="status"?"none":""))}
   $("dTitle").textContent=title(p);
   renderLockUI(p);
-  renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); setDirty(false);
+  renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); renderBoundaryUI(p); setDirty(false);
   $("drawer").hidden=false; if(window.innerWidth<=760) $("list").hidden=true;
   renderAll(); setTimeout(()=>map.invalidateSize(),50);
 }
@@ -548,6 +600,7 @@ function renderLinks(p){
   if(!isNaN(lat)) add(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`,"Street View");
   if(p.listing) add(p.listing,(p.site||"Listing")+" page");
   add("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","RNAL register");
+  add("https://snic.dgterritorio.gov.pt/visualizadorCadastro","DGT cadastre viewer");
   if(p.al) add("https://www.google.com/search?q="+encodeURIComponent('"'+p.al+'"'),"Search AL number");
 }
 function renderLog(p){
@@ -632,7 +685,7 @@ $("lookupBtn").onclick=async()=>{
 $("importBtn").onclick=()=>$("importFile").click();
 $("importFile").onchange=()=>{
   const f=$("importFile").files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;let kept=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){const old=props[k]||{};const nv={...old,...inc[k],id:k};if(locked(old)||old.pinStatus==="confirmed"){nv.lat=old.lat;nv.lng=old.lng;nv.pinStatus=old.pinStatus;nv.pinLocked=old.pinLocked;kept++}props[k]=nv;n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`+(kept?`, ${kept} confirmed pin${kept===1?"":"s"} kept`:""))}catch(e){toast("That file could not be read")}};
+  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;let kept=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){const old=props[k]||{};const nv={...old,...inc[k],id:k};if(locked(old)||old.pinStatus==="confirmed"){nv.lat=old.lat;nv.lng=old.lng;nv.pinStatus=old.pinStatus;nv.pinLocked=old.pinLocked;kept++} if(old.boundary){nv.boundary=old.boundary;nv.boundaryStatus=old.boundaryStatus;nv.plotArea=old.plotArea}props[k]=nv;n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`+(kept?`, ${kept} confirmed pin${kept===1?"":"s"} kept`:""))}catch(e){toast("That file could not be read")}};
   r.readAsText(f); $("importFile").value="";
 };
 window.addEventListener("beforeunload",()=>{if(dirty)save()});
