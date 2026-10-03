@@ -218,6 +218,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
   <div class="drawer" id="drawer" hidden>
     <div class="head">
       <h2 id="dTitle">Property</h2>
+      <button class="btn" id="lockBtn" title="Lock or unlock the pin position">Lock</button>
       <button class="btn" id="locateBtn" title="Click on the map to move the pin">Move pin</button>
       <button class="btn" id="closeBtn">Close</button>
     </div>
@@ -246,7 +247,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
           <div class="f"><label for="lat">Latitude</label><input id="lat" name="lat"></div>
           <div class="f"><label for="lng">Longitude</label><input id="lng" name="lng"></div>
         </div>
-        <div class="f"><label for="pinStatus">Pin status</label><select id="pinStatus" name="pinStatus"><option value="">Not placed</option><option value="approximate">Approximate, needs confirming</option><option value="confirmed">Confirmed on satellite</option></select></div>
+        <input type="hidden" id="pinLocked" name="pinLocked"><div class="f"><label for="pinStatus">Pin status</label><select id="pinStatus" name="pinStatus"><option value="">Not placed</option><option value="approximate">Approximate, needs confirming</option><option value="confirmed">Confirmed on satellite</option></select></div>
         <div class="f"><label for="listing">Listing link (Airbnb / Booking)</label><input id="listing" name="listing" type="url" placeholder="https://"></div>
         <div class="links" id="links"></div>
       </fieldset>
@@ -302,7 +303,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
       <span class="state" id="saveState"></span>
       <span class="confirm" id="delConfirm" hidden>Delete this record? <button type="button" class="btn danger" id="delYes">Delete</button><button type="button" class="btn" id="delNo">Keep</button></span>
       <button type="button" class="btn danger" id="delBtn">Delete</button>
-      <button type="button" class="btn primary" id="saveBtn">Save</button>
+      <button type="button" class="btn primary" id="saveBtn" hidden>Save</button>
     </div>
   </div>
 </main>
@@ -311,9 +312,9 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
 (function(){
 const SB_URL="https://onmuenuokmiwmonfdozh.supabase.co", SB_KEY="sb_publishable_0WS3C6URygYS72m2oV_eLg_qI2KXisC";
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
-let me=null;
+let me=null, canWrite=true;
 const STATUSES=[["none","Not contacted","--s-none"],["letter","Letter sent","--s-letter"],["talks","In talks","--s-talks"],["offer","Offer made","--s-offer"],["declined","Declined","--s-declined"],["bought","Bought","--s-bought"]];
-const FIELDS=["name","rnalName","source","address","pinStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
+const FIELDS=["name","rnalName","source","address","pinStatus","pinLocked","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
 const $=id=>document.getElementById(id);
 const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let props={}, sel=null, placing=false, adding=false, dirty=false, markers={}, pendingAdd=null;
@@ -335,7 +336,7 @@ function parseListing(url){
   }catch(e){}
   return out;
 }
-const locked=p=>p&&p.pinStatus==="confirmed";
+const locked=p=>!!(p&&p.pinLocked);
 const complete=p=>!!(p&&p.pinStatus==="confirmed"&&p.owner&&(p.phone||p.email||p.ownerAddr));
 // readiness: how many of location, owner name and contact we hold
 const readiness=p=>[p.pinStatus==="confirmed",!!p.owner,!!(p.phone||p.email||p.ownerAddr)].filter(Boolean).length;
@@ -368,7 +369,7 @@ async function store(){
   for(const id of gone){delete lastSaved[id];const {error}=await sb.from("properties").delete().eq("id",id);if(error)toast("Delete failed: "+error.message)}
   if(changed.length){
     const rows=changed.map(p=>({id:p.id,data:p,updated_at:new Date().toISOString(),updated_by:me}));
-    const {error}=await sb.from("properties").upsert(rows); if(error){toast("Save failed: "+error.message);return}
+    const {error}=await sb.from("properties").upsert(rows); if(error){toast("Save failed: "+error.message);$("saveState").textContent="Not saved";return}
     for(const p of changed) lastSaved[p.id]=JSON.stringify(p);
   }
 }
@@ -428,7 +429,7 @@ function renderPins(){
     if(isNaN(lat)||isNaN(lng)){if(markers[p.id]){map.removeLayer(markers[p.id]);delete markers[p.id]}continue}
     let m=markers[p.id];
     if(!m){m=L.marker([lat,lng],{icon:icon(p),draggable:!locked(p)});m.on("click",()=>{if(!placing)open(p.id)});
-      m.on("dragend",e=>{const ll=e.target.getLatLng();props[p.id]={...props[p.id],lat:ll.lat.toFixed(6),lng:ll.lng.toFixed(6),pinStatus:"confirmed"};store();renderPins();if(sel===p.id){$("lat").value=props[p.id].lat;$("lng").value=props[p.id].lng;$("pinStatus").value="confirmed";renderTodo(props[p.id])}});
+      m.on("dragend",e=>{const ll=e.target.getLatLng();props[p.id]={...props[p.id],lat:ll.lat.toFixed(6),lng:ll.lng.toFixed(6),pinStatus:"confirmed",updated:Date.now()};store();renderPins();if(sel===p.id){$("lat").value=props[p.id].lat;$("lng").value=props[p.id].lng;$("pinStatus").value="confirmed";renderTodo(props[p.id])}});
       m.addTo(map);markers[p.id]=m}
     else{m.setLatLng([lat,lng]);m.setIcon(icon(p));if(m.dragging){locked(p)?m.dragging.disable():m.dragging.enable()}}
     m.bindTooltip(title(p),{direction:"right",offset:[10,-14]});
@@ -467,7 +468,7 @@ async function reverseGeocode(id,lat,lng){
 }
 $("geoBtn").onclick=async()=>{
   const q=$("address").value.trim(); if(!q) return;
-  if(locked(props[sel])){toast("Pin is confirmed and locked. Set pin status to approximate to move it.");return}
+  if(locked(props[sel])){toast("Pin is locked. Press Unlock to move it.");return}
   $("geoBtn").disabled=true;
   try{const g=await geocode(/azeit|setúbal|setubal|portugal/i.test(q)?q:q+", Azeitão, Setúbal, Portugal");
     if(g){$("lat").value=g.lat;$("lng").value=g.lng;$("pinStatus").value="approximate";setDirty(true);map.setView([g.lat,g.lng],17);toast("Found. Drag the pin if it is slightly off.")}else toast("Address not found. Place the pin by hand.")}
@@ -503,23 +504,29 @@ function open(id){
   if(dirty&&sel&&sel!==id) save();
   sel=id; const p=props[id]; if(!p) return;
   placing=false; adding=false; $("locateBtn").classList.remove("on");
-  for(const f of FIELDS){$(f).value=p[f]??(f==="status"?"none":"")}
+  for(const f of FIELDS){$(f).value=f==="pinLocked"?(p.pinLocked?"1":""):(p[f]??(f==="status"?"none":""))}
   $("dTitle").textContent=title(p);
-  $("locateBtn").textContent=missing(p).pin?"Place pin":locked(p)?"Pin locked":"Move pin";
+  renderLockUI(p);
   renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); setDirty(false);
   $("drawer").hidden=false; if(window.innerWidth<=760) $("list").hidden=true;
   renderAll(); setTimeout(()=>map.invalidateSize(),50);
 }
-function close(){if(dirty)save();sel=null;placing=false;$("drawer").hidden=true;renderAll();setTimeout(()=>map.invalidateSize(),50)}
+function close(){if(dirty){clearTimeout(saveTimer);save()}sel=null;placing=false;$("drawer").hidden=true;renderAll();setTimeout(()=>map.invalidateSize(),50)}
 function setDirty(d){dirty=d;$("saveState").textContent=d?"Unsaved changes":"";$("saveBtn").disabled=!d}
 const title=p=>p.name||p.rnalName||p.address||(p.site?p.site+" listing":"New property");
-$("form").addEventListener("input",()=>{const c=current();setDirty(true);$("dTitle").textContent=title(c);renderLinks(c);renderTodo(c)});
+let saveTimer=null;
+function queueSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{if(dirty)save()},900)}
+$("form").addEventListener("input",()=>{const c=current();setDirty(true);$("dTitle").textContent=title(c);renderLinks(c);renderTodo(c);queueSave()});
+$("form").addEventListener("change",()=>{const c=current();setDirty(true);renderTodo(c);queueSave()});
+$("form").addEventListener("focusout",()=>{if(dirty){clearTimeout(saveTimer);save()}});
+$("pinStatus").addEventListener("change",()=>{if($("pinStatus").value!=="confirmed"&&props[sel]&&props[sel].pinLocked){props[sel]={...props[sel],pinLocked:false};renderLockUI(props[sel]);renderPins()}});
 $("listing").addEventListener("change",()=>{const v=$("listing").value.trim();if(!v||!sel)return;const info=parseListing(v);$("listing").value=info.listing;props[sel]={...props[sel],listingId:info.listingId,site:info.site};if(info.nameHint&&!$("name").value)$("name").value=info.nameHint});
 function renderTodo(p){
   const T=$("todo"); T.innerHTML=""; const m=missing(p);
   const items=[
     m.pin&&["Place on map","warn",()=>{placing=true;$("locateBtn").classList.add("on");renderPins();toast("Click the house on the map")}],
-    m.confirm&&["Confirm pin on satellite","warn",()=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);map.setView([lat,lng],17);sat.addTo(map);toast("Drag the pin onto the house. Dragging marks it confirmed.")}],
+    m.confirm&&["Confirm pin on satellite","warn",()=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);map.setView([lat,lng],18);sat.addTo(map);toast("Drag the pin onto the house, then press Lock.")}],
+    !m.pin&&!m.confirm&&!p.pinLocked&&["Lock pin","",()=>$("lockBtn").click()],
     m.address&&!m.pin&&["Add address","",()=>$("address").focus()],
     m.al&&(p.source||"register")==="register"&&["Find AL number",p.listing?"warn":"",()=>{if(p.listing)window.open(p.listing,"_blank");$("al").focus();toast(p.listing?"The AL number is in the listing's details or house rules. Paste it here.":"Search the RNAL register by address, then paste the number.")}],
     m.owner&&(p.source||"register")!=="register"&&["Find owner via land registry","",()=>{$("descricao").focus();toast("No AL entry to look up. Ask a solicitador for the certidão predial from the address, or ask neighbours.")}],
@@ -531,7 +538,7 @@ function renderTodo(p){
   for(const [l,c,fn] of items){const b=document.createElement("button");b.type="button";b.className=c;b.textContent=l;b.onclick=fn;T.appendChild(b)}
 }
 $("form").addEventListener("submit",e=>{e.preventDefault();save()});
-function current(){const p={...props[sel]};for(const f of FIELDS)p[f]=$(f).value;return p}
+function current(){const p={...props[sel]};for(const f of FIELDS)p[f]=$(f).value;p.pinLocked=!!(props[sel]&&props[sel].pinLocked);return p}
 function renderLinks(p){
   const L_=$("links"); L_.innerHTML="";
   const lat=parseFloat(p.lat),lng=parseFloat(p.lng);
@@ -562,7 +569,11 @@ $("closeBtn").onclick=close;
 $("delBtn").onclick=()=>{$("delConfirm").hidden=false;$("delBtn").hidden=true};
 $("delNo").onclick=()=>{$("delConfirm").hidden=true;$("delBtn").hidden=false};
 $("delYes").onclick=()=>{const id=sel;$("delConfirm").hidden=true;$("delBtn").hidden=false;delete props[id];dirty=false;sel=null;$("drawer").hidden=true;store();renderAll();toast("Deleted")};
-$("locateBtn").onclick=()=>{if(locked(props[sel])){toast("Pin is confirmed and locked. Set pin status to approximate to move it.");return}placing=!placing;$("locateBtn").classList.toggle("on",placing);renderPins()};
+$("lockBtn").onclick=async()=>{if(!sel)return;const p=props[sel];if(missing(p).pin){toast("Place the pin first");return}
+  props[sel]={...p,pinLocked:!p.pinLocked,pinStatus:p.pinLocked?p.pinStatus:"confirmed",updated:Date.now()};$("pinLocked").value=props[sel].pinLocked?"1":"";$("pinStatus").value=props[sel].pinStatus;
+  renderLockUI(props[sel]);renderAll();renderTodo(props[sel]);await store();toast(props[sel].pinLocked?"Pin locked":"Pin unlocked, you can drag it")};
+function renderLockUI(p){$("lockBtn").textContent=p.pinLocked?"Unlock":"Lock";$("lockBtn").classList.toggle("on",!!p.pinLocked);$("locateBtn").textContent=missing(p).pin?"Place pin":p.pinLocked?"Pin locked":"Move pin"}
+$("locateBtn").onclick=()=>{if(locked(props[sel])){toast("Pin is locked. Press Unlock to move it.");return}placing=!placing;$("locateBtn").classList.toggle("on",placing);renderPins()};
 // ---------- add flow ----------
 $("addBtn").onclick=()=>{
   if(adding){adding=false;pendingAdd=null;$("addBtn").classList.remove("on");renderPins();return}
@@ -621,7 +632,7 @@ $("lookupBtn").onclick=async()=>{
 $("importBtn").onclick=()=>$("importFile").click();
 $("importFile").onchange=()=>{
   const f=$("importFile").files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;let kept=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){const old=props[k]||{};const nv={...old,...inc[k],id:k};if(locked(old)){nv.lat=old.lat;nv.lng=old.lng;nv.pinStatus=old.pinStatus;kept++}props[k]=nv;n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`+(kept?`, ${kept} confirmed pin${kept===1?"":"s"} kept`:""))}catch(e){toast("That file could not be read")}};
+  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;let kept=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){const old=props[k]||{};const nv={...old,...inc[k],id:k};if(locked(old)||old.pinStatus==="confirmed"){nv.lat=old.lat;nv.lng=old.lng;nv.pinStatus=old.pinStatus;nv.pinLocked=old.pinLocked;kept++}props[k]=nv;n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`+(kept?`, ${kept} confirmed pin${kept===1?"":"s"} kept`:""))}catch(e){toast("That file could not be read")}};
   r.readAsText(f); $("importFile").value="";
 };
 window.addEventListener("beforeunload",()=>{if(dirty)save()});
@@ -646,11 +657,14 @@ const STOP=new Set(["quinta","casa","casal","villa","vila","vivenda","monte","he
 const toks=s=>norm(s).split(/[^a-z0-9]+/).filter(t=>t.length>2);
 function scoreRecord(p,ocrTokens,ocrNorm){
   const nameT=[...new Set([...toks(p.name),...toks(p.rnalName)])], addrT=toks(p.address);
-  const ocr=new Set(ocrTokens); let s=0;
+  const ocr=[...new Set(ocrTokens)]; let s=0;
   const sig=nameT.filter(t=>!STOP.has(t)); const gen=nameT.filter(t=>STOP.has(t));
-  for(const t of sig){ if(ocr.has(t)) s+=3; else if([...ocr].some(o=>o.length>3&&(o.includes(t)||t.includes(o)))) s+=1.5 }
-  for(const t of gen){ if(ocr.has(t)) s+=0.5 }
-  for(const t of addrT){ if(!STOP.has(t)&&ocr.has(t)) s+=1 }
+  const best=t=>Math.max(0,...ocr.map(o=>o.length>3&&(o.includes(t)||t.includes(o))?0.9:sim(o,t)));
+  for(const t of sig){ const b=best(t); if(b>=0.99) s+=3; else if(b>=0.75) s+=3*b; else if(b>=0.6) s+=1 }
+  for(const t of gen){ if(best(t)>=0.8) s+=0.5 }
+  for(const t of addrT){ if(!STOP.has(t)&&best(t)>=0.85) s+=1 }
+  // whole-name similarity against each line the reader produced
+  const full=norm(p.name).replace(/[^a-z0-9]+/g," ").trim(); if(full.length>5){const lines=ocrNorm.split("\n").map(l=>l.replace(/[^a-z0-9]+/g," ").trim()).filter(Boolean); const b=Math.max(0,...lines.map(l=>sim(l,full))); if(b>=0.6) s+=6*b}
   for(const nm of [p.name,p.rnalName]){const full=norm(nm).replace(/[^a-z0-9]+/g," ").trim(); if(full&&full.length>5&&ocrNorm.includes(full)) s+=6}
   return s;
 }
@@ -665,12 +679,33 @@ $("scanFile").onchange=async()=>{
   const f=$("scanFile").files[0]; $("scanFile").value=""; if(!f) return;
   scanBlob=await shrink(f); scanOcr=""; $("ocrText").hidden=true; $("cands").innerHTML=""; $("scanQ").value="";
   $("scanModal").hidden=false; $("scanState").textContent="Reading the sign…";
+  // first choice: the Claude reader on the server, if a key is configured
+  let cloud=null;
   try{
-    const w=await Tesseract.recognize(scanBlob,"por+eng",{logger:m=>{if(m.status==="recognizing text")$("scanState").textContent="Reading the sign… "+Math.round(m.progress*100)+"%"}});
-    scanOcr=(w.data.text||"").trim();
+    const {data:{session}}=await sb.auth.getSession();
+    const b64=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result.split(",")[1]);fr.readAsDataURL(scanBlob)});
+    const names=Object.values(props).map(p=>p.name||p.rnalName).filter(Boolean);
+    const r=await fetch("/api/read-sign",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+(session?session.access_token:"")},body:JSON.stringify({image:b64,mediaType:"image/jpeg",names})});
+    if(r.ok){cloud=await r.json()}
+  }catch(e){cloud=null}
+  if(cloud&&cloud.text){
+    scanOcr=cloud.text.trim(); $("ocrText").textContent=scanOcr; $("ocrText").hidden=false;
+    const ocrT=toks(scanOcr), ocrN=norm(scanOcr);
+    let ranked=Object.values(props).map(p=>[p,scoreRecord(p,ocrT,ocrN)]).filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    if(cloud.match&&cloud.match!=="none"){const hit=Object.values(props).find(p=>norm(p.name)===norm(cloud.match)||norm(p.rnalName)===norm(cloud.match));if(hit){ranked=[[hit,10],...ranked.filter(x=>x[0].id!==hit.id)].slice(0,5)}}
+    $("scanState").textContent=ranked.length?"Which property is this? Tap one to pin it at your position.":"Could not match the sign to a record.";
+    showCands(ranked); return;
+  }
+  try{
+    const prepped=await forOcr(scanBlob);
+    const worker=await Tesseract.createWorker("por+eng",1,{logger:m=>{if(m.status==="recognizing text")$("scanState").textContent="Reading the sign… "+Math.round(m.progress*100)+"%"}});
+    await worker.setParameters({tessedit_pageseg_mode:"6",preserve_interword_spaces:"1"});
+    let w=await worker.recognize(prepped); scanOcr=(w.data.text||"").trim();
+    if(scanOcr.replace(/[^a-z]/gi,"").length<4){await worker.setParameters({tessedit_pageseg_mode:"11"});w=await worker.recognize(prepped);scanOcr=(w.data.text||"").trim()}
+    await worker.terminate();
   }catch(e){scanOcr=""}
   $("ocrText").textContent=scanOcr||"(no text found)"; $("ocrText").hidden=false;
-  const ocrT=toks(scanOcr), ocrN=norm(scanOcr).replace(/[^a-z0-9]+/g," ");
+  const ocrT=toks(scanOcr), ocrN=norm(scanOcr);
   const ranked=Object.values(props).map(p=>[p,scoreRecord(p,ocrT,ocrN)]).filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]).slice(0,5);
   $("scanState").textContent=ranked.length?"Which property is this? Tap one to pin it at your position.":"Could not match the sign to a record.";
   showCands(ranked);
@@ -685,15 +720,30 @@ async function pickScan(id){
   $("scanModal").hidden=true; const p=props[id]; if(!p) return;
   let pos=null; if(locked(p)){toast("Pin is locked, photo added without moving it")} else {try{pos=await here()}catch(e){toast("No GPS fix, pin not moved. "+e)}}
   const upd={...p,updated:Date.now(),log:[...(p.log||[])]};
-  if(pos){upd.lat=pos.lat.toFixed(6);upd.lng=pos.lng.toFixed(6);upd.pinStatus="confirmed";upd.log.push({date:today(),text:"Visited. Pin set from phone GPS (±"+Math.round(pos.acc)+" m)."})}
+  if(pos){upd.lat=pos.lat.toFixed(6);upd.lng=pos.lng.toFixed(6);upd.pinStatus="confirmed";upd.pinLocked=false;upd.log.push({date:today(),text:"Visited. Pin set from phone GPS (±"+Math.round(pos.acc)+" m)."})}
   if(scanBlob){const ph=await uploadPhoto(id,scanBlob);if(ph){upd.photos=[...(p.photos||[]),ph];if(scanOcr)upd.log.push({date:today(),text:"Gate sign photo. Read: "+scanOcr.replace(/\s+/g," ").slice(0,120)})}}
-  props[id]=upd; await store(); open(id); if(pos){map.setView([pos.lat,pos.lng],18)} renderAll(); toast(pos?"Pinned at your position":"Saved");
+  props[id]=upd; await store(); open(id); if(pos){map.setView([pos.lat,pos.lng],19);sat.addTo(map);if(window.innerWidth<=760){$("drawer").hidden=true;$("list").hidden=true}} renderAll(); toast(pos?"Pinned at your position. Drag the pin onto the house, then Lock.":"Saved");
 }
 const today=()=>new Date().toISOString().slice(0,10);
 function here(){return new Promise((res,rej)=>{if(meDot&&meRing){const l=meDot.getLatLng();return res({lat:l.lat,lng:l.lng,acc:meRing.getRadius()})}if(!navigator.geolocation)return rej("no geolocation");navigator.geolocation.getCurrentPosition(g=>res({lat:g.coords.latitude,lng:g.coords.longitude,acc:g.coords.accuracy}),e=>rej(e.message),{enableHighAccuracy:true,timeout:15000,maximumAge:0})})}
-$("hereBtn").onclick=async()=>{if(!sel)return;if(locked(props[sel])){toast("Pin is confirmed and locked. Set pin status to approximate to move it.");return}try{const pos=await here();$("lat").value=pos.lat.toFixed(6);$("lng").value=pos.lng.toFixed(6);$("pinStatus").value="confirmed";setDirty(true);save();map.setView([pos.lat,pos.lng],18);toast("Pinned at your position (±"+Math.round(pos.acc)+" m)")}catch(e){toast("No GPS fix: "+e)}};
+$("hereBtn").onclick=async()=>{if(!sel)return;if(locked(props[sel])){toast("Pin is locked. Press Unlock to move it.");return}try{const pos=await here();$("lat").value=pos.lat.toFixed(6);$("lng").value=pos.lng.toFixed(6);$("pinStatus").value="confirmed";setDirty(true);await save();map.setView([pos.lat,pos.lng],19);sat.addTo(map);if(window.innerWidth<=760){$("drawer").hidden=true;$("list").hidden=true}toast("Pinned at your position (±"+Math.round(pos.acc)+" m). Drag the pin onto the house, then Lock.")}catch(e){toast("No GPS fix: "+e)}};
 
 // ---------- photos ----------
+// grayscale, contrast-stretched, upscaled copy for the text reader
+async function forOcr(blob){
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(blob)});
+  const target=2200, r=Math.max(1,target/Math.max(img.width,img.height)); const c=document.createElement("canvas"); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+  const ctx=c.getContext("2d"); ctx.imageSmoothingQuality="high"; ctx.drawImage(img,0,0,c.width,c.height);
+  const d=ctx.getImageData(0,0,c.width,c.height), a=d.data; let lo=255,hi=0; const g=new Uint8ClampedArray(a.length/4);
+  for(let i=0,j=0;i<a.length;i+=4,j++){const v=(a[i]*0.299+a[i+1]*0.587+a[i+2]*0.114)|0;g[j]=v;if(v<lo)lo=v;if(v>hi)hi=v}
+  const span=Math.max(1,hi-lo); for(let i=0,j=0;i<a.length;i+=4,j++){const v=((g[j]-lo)*255/span)|0;a[i]=a[i+1]=a[i+2]=v}
+  ctx.putImageData(d,0,0); return await new Promise(res=>c.toBlob(res,"image/png"));
+}
+function sim(a,b){ // 0..1 similarity by edit distance
+  if(a===b) return 1; const m=a.length,n=b.length; if(!m||!n) return 0; const d=[]; for(let i=0;i<=m;i++){d[i]=[i]} for(let j=1;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return 1-d[m][n]/Math.max(m,n);
+}
 async function shrink(file){
   const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file)});
   const max=1600, r=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement("canvas"); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
