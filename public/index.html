@@ -222,7 +222,10 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
     <form id="form">
       <fieldset>
         <legend>Property</legend>
-        <div class="f"><label for="name">Villa or listing name</label><input id="name" name="name" placeholder="As it appears on the listing"></div>
+        <div class="g2">
+          <div class="f"><label for="name">Listing or villa name</label><input id="name" name="name" placeholder="As it appears on the listing"></div>
+          <div class="f"><label for="rnalName">Name in the AL register</label><input id="rnalName" name="rnalName" placeholder="Nome do Alojamento"></div>
+        </div>
         <div class="addrrow">
           <div class="f"><label for="address">Address</label><input id="address" name="address" placeholder="Rua ..., Vila Nogueira de Azeitão"></div>
           <button type="button" class="btn" id="geoBtn" title="Find this address on the map">Locate</button>
@@ -306,8 +309,9 @@ const SB_URL="https://onmuenuokmiwmonfdozh.supabase.co", SB_KEY="sb_publishable_
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let me=null;
 const STATUSES=[["none","Not contacted","--s-none"],["letter","Letter sent","--s-letter"],["talks","In talks","--s-talks"],["offer","Offer made","--s-offer"],["declined","Declined","--s-declined"],["bought","Bought","--s-bought"]];
-const FIELDS=["name","address","pinStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
+const FIELDS=["name","rnalName","address","pinStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
 const $=id=>document.getElementById(id);
+const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let props={}, sel=null, placing=false, adding=false, dirty=false, markers={}, pendingAdd=null;
 
 function createRecord(init){
@@ -436,9 +440,9 @@ $("geoBtn").onclick=async()=>{
 
 // ---------- list ----------
 function renderList(){
-  const q=$("q").value.trim().toLowerCase(), fs=$("fStatus").value;
+  const q=norm($("q").value.trim()), fs=$("fStatus").value;
   const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:m.contact};
-  const items=Object.values(props).filter(p=>pass(p)&&(!q||[p.name,p.address,p.owner,p.al,p.notes].join(" ").toLowerCase().includes(q)))
+  const items=Object.values(props).filter(p=>pass(p)&&(!q||norm([p.name,p.rnalName,p.address,p.owner,p.keyholder,p.al,p.notes].join(" ")).includes(q)))
     .sort((a,b)=>title(a).localeCompare(title(b)));
   const rows=$("rows"); rows.innerHTML="";
   if(!items.length){rows.innerHTML=`<div class="empty">${Object.keys(props).length?"Nothing matches that search.":"No properties yet. Click Add property, then click the house on the map."}</div>`}
@@ -447,7 +451,7 @@ function renderList(){
     b.innerHTML=`<span class="dot" style="background:var(${sVar(p.status)})"></span><span><div class="addr"></div><div class="meta"></div></span><span class="ref"></span>`;
     const m=missing(p);
     b.querySelector(".addr").textContent=title(p);
-    b.querySelector(".meta").textContent=[p.name&&p.address?p.address:null,p.owner||"Owner unknown",sLabel(p.status),p.nextAction].filter(Boolean).join(" · ");
+    b.querySelector(".meta").textContent=[p.rnalName&&norm(p.rnalName)!==norm(p.name)?"AL: "+p.rnalName:null,p.name&&p.address?p.address:null,p.owner||"Owner unknown",sLabel(p.status),p.nextAction].filter(Boolean).join(" · ");
     b.querySelector(".ref").textContent=m.pin?"no pin":m.confirm?"pin approx.":(p.al||"");
     b.onclick=()=>{open(p.id);const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(!isNaN(lat))map.panTo([lat,lng])}; rows.appendChild(b);
   }
@@ -470,7 +474,7 @@ function open(id){
 }
 function close(){if(dirty)save();sel=null;placing=false;$("drawer").hidden=true;renderAll();setTimeout(()=>map.invalidateSize(),50)}
 function setDirty(d){dirty=d;$("saveState").textContent=d?"Unsaved changes":"";$("saveBtn").disabled=!d}
-const title=p=>p.name||p.address||(p.site?p.site+" listing":"New property");
+const title=p=>p.name||p.rnalName||p.address||(p.site?p.site+" listing":"New property");
 $("form").addEventListener("input",()=>{const c=current();setDirty(true);$("dTitle").textContent=title(c);renderLinks(c);renderTodo(c)});
 $("listing").addEventListener("change",()=>{const v=$("listing").value.trim();if(!v||!sel)return;const info=parseListing(v);$("listing").value=info.listing;props[sel]={...props[sel],listingId:info.listingId,site:info.site};if(info.nameHint&&!$("name").value)$("name").value=info.nameHint});
 function renderTodo(p){
@@ -601,16 +605,15 @@ boot();
 
 // ---------- phone: scan a gate sign ----------
 const STOP=new Set(["quinta","casa","casal","villa","vila","vivenda","monte","herdade","da","de","do","das","dos","e","a","o","the","azeitao","arrabida","setubal","al","lda","house","country","serra","mar"]);
-const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 const toks=s=>norm(s).split(/[^a-z0-9]+/).filter(t=>t.length>2);
 function scoreRecord(p,ocrTokens,ocrNorm){
-  const nameT=toks(p.name), addrT=toks(p.address);
+  const nameT=[...new Set([...toks(p.name),...toks(p.rnalName)])], addrT=toks(p.address);
   const ocr=new Set(ocrTokens); let s=0;
   const sig=nameT.filter(t=>!STOP.has(t)); const gen=nameT.filter(t=>STOP.has(t));
   for(const t of sig){ if(ocr.has(t)) s+=3; else if([...ocr].some(o=>o.length>3&&(o.includes(t)||t.includes(o)))) s+=1.5 }
   for(const t of gen){ if(ocr.has(t)) s+=0.5 }
   for(const t of addrT){ if(!STOP.has(t)&&ocr.has(t)) s+=1 }
-  const full=norm(p.name).replace(/[^a-z0-9]+/g," ").trim(); if(full&&full.length>5&&ocrNorm.includes(full)) s+=6;
+  for(const nm of [p.name,p.rnalName]){const full=norm(nm).replace(/[^a-z0-9]+/g," ").trim(); if(full&&full.length>5&&ocrNorm.includes(full)) s+=6}
   return s;
 }
 let scanBlob=null, scanOcr="";
@@ -634,7 +637,7 @@ $("scanFile").onchange=async()=>{
   $("scanState").textContent=ranked.length?"Which property is this? Tap one to pin it at your position.":"Could not match the sign to a record.";
   showCands(ranked);
 };
-$("scanQ").oninput=()=>{const q=norm($("scanQ").value).trim();if(!q){return}const l=Object.values(props).filter(p=>norm(p.name+" "+p.address+" "+p.al).includes(q)).slice(0,8).map(p=>[p,null]);showCands(l,"Nothing matches that search.")};
+$("scanQ").oninput=()=>{const q=norm($("scanQ").value).trim();if(!q){return}const l=Object.values(props).filter(p=>norm(p.name+" "+(p.rnalName||"")+" "+p.address+" "+p.al).includes(q)).slice(0,8).map(p=>[p,null]);showCands(l,"Nothing matches that search.")};
 $("scanCancel").onclick=()=>{$("scanModal").hidden=true};
 $("scanNew").onclick=async()=>{
   const guess=(scanOcr.split("\n").map(s=>s.trim()).filter(s=>s.length>3).sort((a,b)=>b.length-a.length)[0]||"").slice(0,60);
