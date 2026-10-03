@@ -451,7 +451,8 @@ map.on("click",e=>{
     store(); open(id); if(!props[id].address) reverseGeocode(id,lat,lng);
   } else if(placing&&sel){
     placing=false;$("locateBtn").classList.remove("on");
-    props[sel]={...props[sel],lat,lng,pinStatus:"confirmed",updated:Date.now()};$("lat").value=lat;$("lng").value=lng;$("pinStatus").value="confirmed";$("locateBtn").textContent="Move pin";store();renderAll();renderTodo(current());
+    props[sel]={...props[sel],lat,lng,pinStatus:"confirmed",updated:Date.now()};$("lat").value=lat;$("lng").value=lng;$("pinStatus").value="confirmed";renderLockUI(props[sel]);store();renderAll();renderTodo(current());
+    $("drawer").hidden=false;toast("Pin placed. Drag it to adjust, then Lock.");
   }
 });
 
@@ -626,7 +627,10 @@ $("lockBtn").onclick=async()=>{if(!sel)return;const p=props[sel];if(missing(p).p
   props[sel]={...p,pinLocked:!p.pinLocked,pinStatus:p.pinLocked?p.pinStatus:"confirmed",updated:Date.now()};$("pinLocked").value=props[sel].pinLocked?"1":"";$("pinStatus").value=props[sel].pinStatus;
   renderLockUI(props[sel]);renderAll();renderTodo(props[sel]);await store();toast(props[sel].pinLocked?"Pin locked":"Pin unlocked, you can drag it")};
 function renderLockUI(p){$("lockBtn").textContent=p.pinLocked?"Unlock":"Lock";$("lockBtn").classList.toggle("on",!!p.pinLocked);$("locateBtn").textContent=missing(p).pin?"Place pin":p.pinLocked?"Pin locked":"Move pin"}
-$("locateBtn").onclick=()=>{if(locked(props[sel])){toast("Pin is locked. Press Unlock to move it.");return}placing=!placing;$("locateBtn").classList.toggle("on",placing);renderPins()};
+$("locateBtn").onclick=()=>{if(locked(props[sel])){toast("Pin is locked. Press Unlock to move it.");return}
+  placing=!placing;$("locateBtn").classList.toggle("on",placing);renderPins();
+  if(placing){const p=props[sel];const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(!isNaN(lat))map.setView([lat,lng],Math.max(map.getZoom(),17));
+    if(window.innerWidth<=760){$("drawer").hidden=true;$("list").hidden=true}toast("Tap the house on the map")}};
 // ---------- add flow ----------
 $("addBtn").onclick=()=>{
   if(adding){adding=false;pendingAdd=null;$("addBtn").classList.remove("on");renderPins();return}
