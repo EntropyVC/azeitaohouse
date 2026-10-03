@@ -378,14 +378,18 @@ function subscribe(){
 // ---------- map ----------
 const HOME=[38.503,-8.992], HOME_ZOOM=14;
 const map=L.map("map",{zoomControl:true}).setView(HOME,HOME_ZOOM);
-const streets=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Tiles &copy; Esri"}).addTo(map);
-const topo=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Tiles &copy; Esri"});
-const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Imagery &copy; Esri"});
-L.control.layers({"Streets":streets,"Satellite":sat,"Topographic":topo},null,{position:"topright"}).addTo(map);
+const esri=n=>"https://server.arcgisonline.com/ArcGIS/rest/services/"+n+"/MapServer/tile/{z}/{y}/{x}";
+const sat=L.tileLayer(esri("World_Imagery"),{maxZoom:19,attribution:"Imagery &copy; Esri"}).addTo(map);
+const streets=L.tileLayer(esri("World_Street_Map"),{maxZoom:19,attribution:"Tiles &copy; Esri"});
+const topo=L.tileLayer(esri("World_Topo_Map"),{maxZoom:19,attribution:"Tiles &copy; Esri"});
+const roads=L.tileLayer(esri("Reference/World_Transportation"),{maxZoom:19,pane:"overlayPane"}).addTo(map);
+const places=L.tileLayer(esri("Reference/World_Boundaries_and_Places"),{maxZoom:19,pane:"overlayPane"}).addTo(map);
+L.control.layers({"Satellite":sat,"Streets":streets,"Topographic":topo},{"Road names":roads,"Place names":places},{position:"topright"}).addTo(map);
+map.on("baselayerchange",e=>{const onSat=e.name==="Satellite";[roads,places].forEach(l=>{if(onSat){if(!map.hasLayer(l))l.addTo(map)}else if(map.hasLayer(l))map.removeLayer(l)})});
 const homeCtl=L.control({position:"topleft"}); homeCtl.onAdd=()=>{const d=L.DomUtil.create("div","leaflet-bar");d.innerHTML='<a href="#" title="Back to Picheleiros" style="font-size:15px;line-height:30px">⌂</a>';L.DomEvent.on(d,"click",e=>{L.DomEvent.stop(e);map.setView(HOME,HOME_ZOOM)});return d}; homeCtl.addTo(map);
 function icon(p){
   return L.divIcon({className:"pinicon"+(p.id===sel?" sel":""),iconSize:[22,30],iconAnchor:[11,30],popupAnchor:[0,-28],
-    html:p.pinStatus==="confirmed"?`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="${sColor(p.status)}" stroke="rgba(0,0,0,.35)"/><circle cx="11" cy="10.5" r="3.5" fill="#fff"/></svg>`:`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="rgba(255,255,255,.75)" stroke="${sColor(p.status)}" stroke-width="2.5" stroke-dasharray="3 2"/><circle cx="11" cy="10.5" r="3" fill="${sColor(p.status)}"/></svg>`});
+    html:p.pinStatus==="confirmed"?`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="${sColor(p.status)}" stroke="rgba(0,0,0,.35)"/><circle cx="11" cy="10.5" r="3.5" fill="#fff"/></svg>`:`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="rgba(255,255,255,.85)" stroke="${sColor(p.status)}" stroke-width="3" stroke-dasharray="3 2"/><circle cx="11" cy="10.5" r="3" fill="${sColor(p.status)}"/></svg>`});
 }
 function renderPins(){
   for(const id in markers){if(!props[id]){map.removeLayer(markers[id]);delete markers[id]}}
