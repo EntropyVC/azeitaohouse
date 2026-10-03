@@ -1,0 +1,1641 @@
+{
+  "version": 1,
+  "exported": "2026-10-02T22:00:00Z",
+  "properties": {
+    "laranjeiras": {
+      "id": "laranjeiras",
+      "name": "Quinta do Porto das Laranjeiras - Serra e Mar",
+      "address": "Porto das Laranjeiras, 2900-739 Setúbal (Anunciada parish)",
+      "type": "Quinta",
+      "beds": "3",
+      "area": "90",
+      "listing": "https://www.holidu.de/d/60403885",
+      "site": "Holidu",
+      "al": "",
+      "owner": "Alexandre Manuel Paul Arriegas",
+      "ownerIs": "Private individual, resident",
+      "ownerAddr": "Rua Alexandre Rey Colaço 2, 1700-024 Lisboa (address of his other AL, Chez Alvalade, 51400/AL)",
+      "email": "alexandrearriegas@gmail.com",
+      "status": "none",
+      "nextAction": "Confirm exact plot on satellite view, then letter to Lisbon address",
+      "notes": "Not pinned. Location only known as Porto das Laranjeiras, 2900-739, Setúbal side of the serra. Listing map centre was near 38.516, -8.966 but holiday sites blur it. Look for a 9,000 m² plot with pool, orange and olive trees, in a valley. Listing uses AL 51400/AL, which is registered to the owner's Lisbon flat (Chez Alvalade), not to this quinta. No RNAL entry found under Laranjeiras in Setúbal matching this 9,000 m² plot, so the quinta may be let on a borrowed number. Also listed on Abritel, FeWo-direkt (p1135438), Trivago.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Holidu. Owner identified from FeWo-direkt host name and RNAL 51400/AL."
+        }
+      ],
+      "pinStatus": ""
+    },
+    "medronheiros": {
+      "id": "medronheiros",
+      "name": "Quinta dos Medronheiros",
+      "address": "Quinta Medronheiros, 2925-002 Brejos de Azeitão",
+      "type": "Quinta",
+      "beds": "6",
+      "listing": "https://www.airbnb.com/rooms/12825957",
+      "listingId": "airbnb:12825957",
+      "site": "Airbnb",
+      "al": "134983/AL",
+      "owner": "João Barreiros",
+      "ownerIs": "Private individual, resident",
+      "email": "jfsbarreiros@hotmail.com",
+      "status": "none",
+      "nextAction": "Find the plot near Brejos de Azeitão on satellite, 50,000 m² with pool",
+      "notes": "Not pinned. Registry address is just Quinta Medronheiros, 2925-002 Brejos de Azeitão. Look on satellite around Brejos de Azeitão for a 50,000 m² estate with pool. The road name may show as Medronheiros on signs. Airbnb title Arrabida Estate, 50.000m2 of nature w/pool. RNAL registered 2022-12-08 as Moradia, 10 guests, 5 rooms, owner (Proprietário). Confirm plot.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. Owner from RNAL 134983/AL."
+        }
+      ],
+      "pinStatus": ""
+    },
+    "arrabida-villas-ii": {
+      "id": "arrabida-villas-ii",
+      "name": "Arrábida Villas II (RNAL name Quinta dos Amores)",
+      "address": "Rua dos Amores Perfeitos, Estrada dos Picheleiros, 2925-346 Picheleiros, Azeitão",
+      "type": "Quinta",
+      "beds": "2",
+      "listing": "https://www.airbnb.com/rooms/1110127006887783704",
+      "listingId": "airbnb:1110127006887783704",
+      "site": "Airbnb",
+      "al": "125461/AL",
+      "owner": "Ana Cristina Gonzalez Perdigão",
+      "ownerIs": "Private individual, resident",
+      "email": "cristina.perdigao@sapo.pt",
+      "status": "none",
+      "nextAction": "Locate on satellite along Estrada dos Picheleiros, 20,000 m² with cottages and pool",
+      "notes": "Not pinned. Registry address Rua dos Amores Perfeitos, off Estrada dos Picheleiros, 2925-346. Rua dos Amores Perfeitos is not on the map. Follow Estrada dos Picheleiros on satellite looking for a 20,000 m² estate with several cottages and a pool. RNAL registered 2022-04-09 as Moradia, 16 guests, 6 rooms, owner (Proprietário). Several cottages on one estate, so the AL covers the whole property. Register export: 16 guests, 6 rooms, built after 1951: S.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. Owner from RNAL 125461/AL."
+        }
+      ],
+      "pinStatus": ""
+    },
+    "la-rabide": {
+      "id": "la-rabide",
+      "name": "Quinta La Rabide",
+      "address": "Rua São Simão, Amorena, 2925-488 Picheleiros, Azeitão",
+      "type": "Moradia",
+      "beds": "2",
+      "listing": "https://www.airbnb.com/rooms/1094986580066279192",
+      "listingId": "airbnb:1094986580066279192",
+      "site": "Airbnb",
+      "al": "48676/AL",
+      "owner": "José Jorge de Sousa Melo",
+      "ownerIs": "Private individual, resident",
+      "email": "josejmelo@gmail.com",
+      "status": "none",
+      "nextAction": "Locate on satellite near Amorena / Picheleiros, 2-storey house with pool",
+      "notes": "Not pinned. Registry address Rua São Simão, Amorena, 2925-488 Picheleiros. Amorena is a small locality near Picheleiros. 2-storey house with private pool and mountain view. Airbnb listing is run by Holidu as host, so the owner does not manage it himself. RNAL registered 2017-06-14 as Moradia, 6 guests, owner (Proprietário). Register export: 6 guests, 2 rooms, built after 1951: S.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. Owner from RNAL 48676/AL."
+        }
+      ],
+      "pinStatus": ""
+    },
+    "villa-3-paths": {
+      "id": "villa-3-paths",
+      "name": "Villa 3 Paths (RNAL name Quinta dos 3 Caminhos)",
+      "address": "Estrada dos Picheleiros, 2925-346 Picheleiros, Azeitão",
+      "type": "Quinta",
+      "beds": "5",
+      "listing": "https://www.airbnb.com/rooms/5255226",
+      "listingId": "airbnb:5255226",
+      "site": "Airbnb",
+      "al": "16661/AL",
+      "owner": "",
+      "ownerIs": "Unknown",
+      "keyholder": "Bernardo Faria dos Santos de Brito Cunha (AL holder as comodatário, not the owner)",
+      "status": "none",
+      "nextAction": "Pull the certidão predial to find the registered owner. Bernardo runs it under a loan-for-use, so a family member likely owns it.",
+      "notes": "Not pinned. Registry address is just Estrada dos Picheleiros, 2925-346. 5 bedroom house with pool and panoramic serra view somewhere along that road. Airbnb shows licence 3238/15, an old municipal number. RNAL match by name is 16661/AL, Quinta dos 3 Caminhos, Estrada dos Picheleiros, registered 2015-07-06, 8 guests. Holder is Comodatário, so ownership sits elsewhere. Register export: 8 guests, 3 rooms, built after 1951: N.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. AL holder from RNAL 16661/AL, owner not yet identified."
+        }
+      ],
+      "pinStatus": "",
+      "email": "teresaleitecastro@gmail.com"
+    },
+    "quinta-da-arrabida": {
+      "id": "quinta-da-arrabida",
+      "name": "Quinta da Arrábida - Manor House",
+      "address": "Estrada Nacional 379-1, 2925-318 Azeitão",
+      "type": "Quinta",
+      "beds": "3",
+      "listing": "https://www.airbnb.com/rooms/42270750",
+      "listingId": "airbnb:42270750",
+      "site": "Airbnb",
+      "al": "99565/AL",
+      "owner": "",
+      "ownerIs": "Company",
+      "phone": "919937852",
+      "email": "joaohpato@gmail.com",
+      "keyholder": "Casais da Arrábida Empreendimentos Turísticos Lda (AL holder as comodatário), contact João Pato",
+      "status": "none",
+      "nextAction": "Pull the certidão predial for the 11 ha estate. The operating company holds the AL on loan, the land owner is separate.",
+      "notes": "Not pinned. Registry address Estrada Nacional 379-1, 2925-318 Azeitão. The EN 379-1 runs from Vila Nogueira south over the serra to Portinho. An 11 hectare estate with a manor house, orchard and pool. Street View along the road should find the gate. Also carries RNAT 6965 (animação turística). RNAL registered 2019-07-06 as Apartamento, 8 guests. 11 hectares, manor house, so an estate rather than a single villa.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. Operator and contact from RNAL 99565/AL."
+        }
+      ],
+      "pinStatus": ""
+    },
+    "casa-do-sitio": {
+      "id": "casa-do-sitio",
+      "name": "Casa do Sítio",
+      "address": "Rua Celestino Cachão 5, Aldeia da Piedade, 2925-368 Azeitão",
+      "type": "Moradia",
+      "beds": "5",
+      "lat": "38.4939",
+      "lng": "-9.0379",
+      "listing": "https://www.airbnb.com/rooms/10655747",
+      "listingId": "airbnb:10655747",
+      "site": "Airbnb",
+      "al": "17116/AL",
+      "owner": "João Ricardo Sérgio da Costa Gomes",
+      "ownerIs": "Private individual, resident",
+      "email": "boucanova@sapo.pt",
+      "status": "none",
+      "nextAction": "Confirm number 5 on Street View, then letter",
+      "notes": "Pin is on Rua Celestino Cachão itself (real street, geocoded), not number 5. Check number 5 on Street View and drag the pin. RNAL registered 2015-06-30 as Moradia, 10 guests, 5 rooms, owner (Proprietário). Street-level geocode, so the pin should be close. Register export: 10 guests, 5 rooms, built after 1951: S.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. Owner from RNAL 17116/AL."
+        }
+      ],
+      "pinStatus": "approximate"
+    },
+    "quinta-da-serra": {
+      "id": "quinta-da-serra",
+      "name": "Quinta da Serra (RNAL name Quinta da Serra FA)",
+      "address": "Quinta da Serra, EN 379-1, Aldeia de São Pedro, 2925-758 Azeitão",
+      "type": "Quinta",
+      "beds": "4",
+      "lat": "38.488411",
+      "lng": "-9.021413",
+      "listing": "https://www.airbnb.com/rooms/11602110",
+      "listingId": "airbnb:11602110",
+      "site": "Airbnb",
+      "al": "27290/AL",
+      "owner": "Francisco Xavier Corrêa Henriques d'Avillez",
+      "ownerIs": "Private individual, resident",
+      "email": "soc.agricola@mail.telepac.pt",
+      "keyholder": "Ana Paula (Airbnb host)",
+      "status": "none",
+      "nextAction": "Confirm the villa within the quinta on satellite. The contact email is a sociedade agrícola, so the estate is run as a farm business",
+      "notes": "Pin is the Quinta da Serra estate marker on the map (named estate, EN 379-1 below Aldeia de São Pedro). The villa is somewhere inside the estate. Confirm on satellite. Quinta da Serra is a named estate on OSM on the EN 379-1 south of Aldeia de São Pedro, so the pin is the estate itself, with the rental villa somewhere inside it. RNAL registered 2016-04-13 as Moradia, 8 guests, 4 rooms, owner (Proprietário). The d'Avillez family are a long-established landowning family, so expect this to be an estate held across generations rather than an investment buy. Airbnb host Ana Paula is not the registered owner. Register export: 8 guests, 4 rooms, built after 1951: S.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. Owner from RNAL 27290/AL."
+        }
+      ],
+      "pinStatus": "approximate"
+    },
+    "quinta-do-parral": {
+      "id": "quinta-do-parral",
+      "name": "Quinta do Parral",
+      "address": "Estrada do Parral, Aldeia da Piedade, 2925-002 Azeitão",
+      "type": "Quinta",
+      "beds": "5",
+      "listing": "https://www.airbnb.com/rooms/1227358760117206544",
+      "listingId": "airbnb:1227358760117206544",
+      "site": "Airbnb",
+      "al": "158579/AL",
+      "owner": "",
+      "ownerIs": "Company",
+      "email": "jgj@legalworks.pt",
+      "keyholder": "Delande, Unipessoal Lda (AL holder as comodatário, NIPC 517735202), contact via lawyer at Legalworks. Airbnb host Stephanie",
+      "status": "none",
+      "nextAction": "Pull the certidão predial for the 7 ha plot on Estrada do Parral to find the landowner behind Delande",
+      "notes": "Not pinned. Registry address Estrada do Parral, Aldeia da Piedade, 2925-002. Estrada do Parral exists on the map at Aldeia da Portela and continues south into Sesimbra concelho. 7 hectares with pool and tennis court, easy to spot on satellite. Airbnb title Quiet luxury Arrábida escape, Pool & Views. 7 hectares, pool, tennis court, horses. RNAL registered 2024-08-20 as Moradia, 12 guests, 5 rooms. Holder is a single-member company on a loan-for-use with a law firm as the contact, so the owner sits behind a structure and the operation is recent. The same road continues south into Sesimbra concelho. Register export: 12 guests, 5 rooms, built after 1951: S.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. AL holder from RNAL 158579/AL, landowner not yet identified."
+        }
+      ],
+      "pinStatus": ""
+    },
+    "quinta-da-arrabida-chalet": {
+      "id": "quinta-da-arrabida-chalet",
+      "name": "Quinta da Arrábida (Stunning Countryside Chalet)",
+      "address": "Quinta da Serra ou Ramada, EN 379-1, Aldeia de São Pedro, 2925-758 Azeitão",
+      "type": "Quinta",
+      "beds": "4",
+      "lat": "38.4878",
+      "lng": "-9.0208",
+      "listing": "https://www.airbnb.com/rooms/1037923",
+      "listingId": "airbnb:1037923",
+      "site": "Airbnb",
+      "al": "20177/AL",
+      "owner": "Maria Isabel Correia Henriques d'Avillez da Silva Bento",
+      "ownerIs": "Private individual, resident",
+      "email": "i.avillez@sapo.pt",
+      "keyholder": "Miguel (Airbnb host)",
+      "status": "none",
+      "nextAction": "Treat together with Quinta da Serra (27290/AL). Same estate, same family. One approach to the family rather than two letters",
+      "notes": "Pin placed on the Quinta da Serra estate, since the registry address is Quinta da Serra ou Ramada, same postcode. Find the designer villa with pool inside the estate on satellite and drag the pin. Same address block as Quinta da Serra, registered as Quinta da Serra ou Ramada, same postcode 2925-758. Owner is Maria Isabel d'Avillez, a sibling or close relative of Francisco Xavier d'Avillez who holds 27290/AL next door. The estate has been split between family members, each letting their own house. 8.9 hectares, designer villa with pool. RNAL registered 2015-09-25 as Moradia, 10 guests, 4 rooms, owner (Proprietário). Pin placed just off the Quinta da Serra estate marker, approximate. Not the same property as Quinta da Arrábida Manor House (99565/AL) on the Brejos side. Register export: 10 guests, 4 rooms, built after 1951: S.",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Found via Airbnb. Owner from RNAL 20177/AL."
+        }
+      ],
+      "pinStatus": "approximate"
+    },
+    "quinta-yama": {
+      "id": "quinta-yama",
+      "name": "Quinta Yama",
+      "address": "Rua dos Picheleiros - São Lourenço, Herdade do Picheleiro, 2925-581 São Lourenço",
+      "al": "181352/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Etienne Guillaume Gerardine Dekkers",
+      "ownerIs": "Private individual, resident",
+      "email": "zquietlife@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "Newest registration in the subset, July 2026, Herdade do Picheleiro on Rua dos Picheleiros. Foreign owner. RNAL registered 2026-09-25, opened 2026-07-01. 10 guests, 5 rooms, 7 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "vivenda-k": {
+      "id": "vivenda-k",
+      "name": "Vivenda K",
+      "address": "Estrada Nacional 379-1, K RC/1º Quinta da serra, 2925-318 Azeitão",
+      "al": "180193/AL",
+      "type": "Quinta",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Patrícia Raquel De Melo E Liz Saraiva Rodrigues Da Silva",
+      "ownerIs": "Private individual, resident",
+      "email": "patricia.liz@lizinvest.pt",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "Also on the Quinta da Serra block (EN 379-1, 2925-318). Holder is a private owner whose email is at an investment company, Liz Invest, so this plot has changed hands out of the family. RNAL registered 2026-08-18, opened 2026-06-01. 6 guests, 3 rooms, 5 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "vivenda-das-laranjeiras": {
+      "id": "vivenda-das-laranjeiras",
+      "name": "Vivenda das Laranjeiras",
+      "address": "Rua Alto do Porto das Laranjeiras, 21 Aldeia Grande, 2900-739 Setúbal",
+      "al": "174102/AL",
+      "type": "Moradia",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Georg Leifheit",
+      "ownerIs": "Private individual, resident",
+      "email": "georg.leifheit@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2026-02-10, opened 2025-11-13. 6 guests, 3 rooms, 3 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-do-penedo": {
+      "id": "casa-do-penedo",
+      "name": "Casa do Penedo",
+      "address": "1ª Vereda Sem Nome Alportuche - Arrábida, 2925-378 Portinho da Arrábida",
+      "al": "173132/AL",
+      "type": "Moradia",
+      "beds": "7",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Sofia Avelar Pinto Bénard Da Costa Ayton",
+      "ownerIs": "Private individual, resident",
+      "email": "sofiabenard.ayton@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2026-01-08, opened 2025-12-01. 12 guests, 7 rooms, 10 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-maloney": {
+      "id": "casa-maloney",
+      "name": "CASA MALONEY",
+      "address": "1ª Rua ALPORTUCHE-ARRÁBIDA SERRA DA ARRÁBIDA, 2925-378 Portinho da Arrábida",
+      "al": "172327/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "JANNA LAU EP BEGUE",
+      "ownerIs": "Private individual, resident",
+      "email": "janna.begue@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2025-12-05, opened 2025-09-09. 8 guests, 4 rooms, 4 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "sossego-arrabida-encantador": {
+      "id": "sossego-arrabida-encantador",
+      "name": "Sossego Arrábida Encantador",
+      "address": "Estrada dos Picheleiros, 120 Lugar do Bem Hajam, 2925-346 Picheleiros",
+      "al": "170167/AL",
+      "type": "Moradia",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "Dunas Coloridas Unipessoal Lda (Arrendatário, AL holder, not the owner), 965493878",
+      "email": "rui.f.freire@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2025-09-24, opened 2025-08-01. 10 guests, 5 rooms, 5 beds. Holder role: Arrendatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-na-arrabida-na-quinta-da-anunciada": {
+      "id": "casa-na-arrabida-na-quinta-da-anunciada",
+      "name": "Casa na arrabida na quinta da anunciada",
+      "address": "Rua da Aldeia Grande, 1, 2900-746 Setúbal",
+      "al": "168721/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "sete ao sol lda (Arrendatário, AL holder, not the owner), 917226480",
+      "email": "g@bbkw.eu",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2025-08-13, opened 2025-07-01. 10 guests, 4 rooms, 8 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-na-arrabida-na-quinta-da-anunciada-167125": {
+      "id": "casa-na-arrabida-na-quinta-da-anunciada-167125",
+      "name": "Casa na arrabida na quinta da anunciada",
+      "address": "Rua da Aldeia Grande, 1, 2900-746 Setúbal",
+      "al": "167125/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "sete ao sol lda (Arrendatário, AL holder, not the owner), 917226480",
+      "email": "g@bbkw.eu",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2025-07-06, opened 2025-05-01. 16 guests, 4 rooms, 8 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "villa-aldeia-grande": {
+      "id": "villa-aldeia-grande",
+      "name": "Villa Aldeia Grande",
+      "address": "Rua Casal dos Altos, 2 Rua Casal dos Altos, 2, Aldeia Grande, 2900-737 Setúbal",
+      "al": "165066/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Ana Isabel Canha Gomes Ferreira",
+      "ownerIs": "Private individual, resident",
+      "email": "isabel.cgferreira@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2025-05-21, opened 2025-04-01. 8 guests, 4 rooms, 5 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "anixa": {
+      "id": "anixa",
+      "name": "Anixa",
+      "address": "Estrada Vale da Rasca, CCI 3216, 2900-682 Setúbal",
+      "al": "156254/AL",
+      "type": "Moradia",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "TimeCooler Lda (Comodatário, AL holder, not the owner), 966221563",
+      "email": "timecooler.pt@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2024-05-11, opened 2024-07-01. 10 guests, 5 rooms, 8 beds. Holder role: Comodatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "arrabida-country-house": {
+      "id": "arrabida-country-house",
+      "name": "Arrabida Country House",
+      "address": "Estrada Nacional 379-1, SN, 2925-318 Azeitão",
+      "al": "155604/AL",
+      "type": "Moradia",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Maria da Conceição Almeida Pinto",
+      "ownerIs": "Private individual, resident",
+      "email": "belodge@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2024-04-10, opened 2024-03-26. 6 guests, 3 rooms, 4 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-do-refugio": {
+      "id": "casa-do-refugio",
+      "name": "Casa do Refúgio",
+      "address": "Estrada Portinho Arrábida na Charca Portinho Arrábida na Charca, 2900-000 Azeitão",
+      "al": "155300/AL",
+      "type": "Moradia",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Casa do Canudo - Investimentos S.A.",
+      "ownerIs": "Company",
+      "email": "geral@pujolinvest.pt",
+      "phone": "214348925962052602",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "Holder is Casa do Canudo Investimentos SA, contact at Pujol Invest, an investment vehicle rather than a family. RNAL registered 2024-03-26, opened 2024-04-01. 6 guests, 2 rooms, 4 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-da-nazare": {
+      "id": "casa-da-nazare",
+      "name": "Casa da Nazaré",
+      "address": "Estrada Portinho da Arrábida, Casa 5, 2925-378 Portinho da Arrábida",
+      "al": "153873/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "António Manuel Oliveira Da Costa Deitado",
+      "ownerIs": "Private individual, resident",
+      "email": "arrabida@portinhodivers.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin",
+      "listing": "https://www.portinhodivers.com",
+      "site": "portinhodivers.com",
+      "notes": "RNAL registered 2024-01-09, opened 2023-12-22. 9 guests, 4 rooms, 6 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "ricardo-guerreiro": {
+      "id": "ricardo-guerreiro",
+      "name": "Ricardo Guerreiro",
+      "address": "Rua José Cardoso Machado, 25 Aldeia Grande, 2900-735 Setúbal",
+      "al": "151565/AL",
+      "type": "Moradia",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Ricardo Manuel da Silva Guerreiro",
+      "ownerIs": "Private individual, resident",
+      "email": "guerreiro.s.ricardo@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-10-05, opened 2023-10-10. 6 guests, 2 rooms, 4 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "flh-quinta-galoe": {
+      "id": "flh-quinta-galoe",
+      "name": "FLH Quinta Galoe",
+      "address": "Estrada das Machadas, quinta do Galoe, 2900-467 Setúbal",
+      "al": "149317/AL",
+      "type": "Quinta",
+      "beds": "6",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "flikehome mediação imobiliaria lda (Arrendatário, AL holder, not the owner)",
+      "email": "miguel.rodrigues@flh.pt",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-08-08, opened 2023-07-24. 10 guests, 6 rooms, 10 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "mario-goncalves-ferreira": {
+      "id": "mario-goncalves-ferreira",
+      "name": "Mario Goncalves Ferreira",
+      "address": "Rua do Fisco Alto da Brogueira, Picheleiro, 2925-384 Vila Nogueira de Azeitão",
+      "al": "148848/AL",
+      "type": "Moradia",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Unknown",
+      "keyholder": "Wonderful Vocation (Usufrutuário, AL holder, not the owner), 926770490",
+      "email": "mario.wonderfulvocation@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-08-01, opened 2023-10-01. 10 guests, 5 rooms, 5 beds. Holder role: Usufrutuário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casal-do-tojo": {
+      "id": "casal-do-tojo",
+      "name": "Casal do Tojo",
+      "address": "Estrada Nacional 379, KM 19 Casal do Tojo, 2925-372 Aldeia da Piedade",
+      "al": "144302/AL",
+      "type": "Quinta",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "SOCIEDADE AGRÍCOLA OVMS, LDA (Comodatário, AL holder, not the owner), 964022308",
+      "email": "ana_valadas@hotmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "Casal do Tojo is a known wine estate (Sociedade Agrícola do Casal do Tojo, Quinta de Catralvos). The AL holder here is a different company on loan-for-use, so check whether the villa sits on the estate. RNAL registered 2023-05-05, opened 2023-09-01. 6 guests, 3 rooms, 4 beds. Holder role: Comodatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "monte-de-acima": {
+      "id": "monte-de-acima",
+      "name": "Monte de Acima",
+      "address": "Rua Monte do Sebo Cx. Postal 3243 Vale da Rasca, 2900-682 Setúbal",
+      "al": "142843/AL",
+      "type": "Quinta",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Jonathan Harle Story",
+      "ownerIs": "Private individual, resident",
+      "email": "jonnystory@me.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-04-13, opened 2023-04-01. 6 guests, 3 rooms, 6 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-do-mar": {
+      "id": "casa-do-mar",
+      "name": "Casa do Mar",
+      "address": "Estrada Portinho da Arrábida Casal da Santa Margarida, 2925-378 Azeitão",
+      "al": "142397/AL",
+      "type": "Quinta",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "Mariana Berger Unipessoal, Lda (Comodatário, AL holder, not the owner), +351926690189",
+      "email": "mariana.gentil.berger@hotmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-04-08, opened 2023-03-31. 6 guests, 3 rooms, 4 beds. Holder role: Comodatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "arrabida-country-house-140567": {
+      "id": "arrabida-country-house-140567",
+      "name": "Arrábida Country House",
+      "address": "Estrada Vale da Rasca Rua Monte do Sebo, 2900-682 Setúbal",
+      "al": "140567/AL",
+      "type": "Quinta",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "Jesus & Valente Lda (Comodatário, AL holder, not the owner), 968255312",
+      "email": "ruivalente88@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-03-24, opened 2023-04-03. 7 guests, 2 rooms, 4 beds. Holder role: Comodatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-do-viso": {
+      "id": "casa-do-viso",
+      "name": "Casa do Viso",
+      "address": "Rua Romanos 10, Viso da Misericórdia, Serra do viso Serra Do Viso, Setubal, 2900-134 Setúbal",
+      "al": "140175/AL",
+      "type": "Moradia",
+      "beds": "1",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "Mais Trade SA (Arrendatário, AL holder, not the owner), 936931424967033229",
+      "email": "administrativo@porticopharma.pt",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-03-22, opened 2023-03-30. 2 guests, 1 rooms, 1 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "lovers-house": {
+      "id": "lovers-house",
+      "name": "Lovers House",
+      "address": "Escadinhas Machadas, 19, 2900-470 Setúbal",
+      "al": "137726/AL",
+      "type": "Moradia",
+      "beds": "1",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Sandra Marisa Cardoso Trindade",
+      "ownerIs": "Private individual, resident",
+      "email": "apartment.lisbon@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-03-03, opened 2023-03-01. 2 guests, 1 rooms, 1 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "lovers-house-137723": {
+      "id": "lovers-house-137723",
+      "name": "Lovers House",
+      "address": "Escadinhas Machadas, 19, 2900-470 Setúbal",
+      "al": "137723/AL",
+      "type": "Moradia",
+      "beds": "1",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Anabela Ribeiro Pinto da Rocha",
+      "ownerIs": "Private individual, resident",
+      "email": "apartment.lisbon@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-03-03, opened 2023-03-01. 2 guests, 1 rooms, 1 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casal-novo-portinho-da-arrabida": {
+      "id": "casal-novo-portinho-da-arrabida",
+      "name": "Casal Novo - Portinho da Arrábida",
+      "address": "Estrada Portinho da Arrábida, 2925-378 Azeitão",
+      "al": "137431/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Sacadura Monteiro Unipessoal, Lda",
+      "ownerIs": "Company",
+      "email": "rita.sacaduramonteiro@gmail.com",
+      "phone": "912076545",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-02-25, opened 2023-03-31. 8 guests, 4 rooms, 6 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-de-s-simao": {
+      "id": "casa-de-s-simao",
+      "name": "CASA DE S. SIMÃO",
+      "address": "Rua São Simão RUA RIO DE CIMA, QUINTA S. SIMÃO, 2925-447 Azeitão",
+      "al": "136589/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "SHARING BALLAD, LDA. (Arrendatário, AL holder, not the owner), 962654219",
+      "email": "armindaneto@armindaneto.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-02-07, opened 2023-01-23. 10 guests, 5 rooms, 10 beds. Holder role: Arrendatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-belga": {
+      "id": "casa-belga",
+      "name": "CASA BELGA",
+      "address": "Rua São Simão RUA RIO DE CIMA, QUINTA S. SIMÃO, 2925-447 Azeitão",
+      "al": "136588/AL",
+      "type": "Quinta",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "SHARING BALLAD, LDA. (Arrendatário, AL holder, not the owner), 962654219",
+      "email": "armindaneto@armindaneto.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2023-02-07, opened 2023-01-23. 4 guests, 2 rooms, 4 beds. Holder role: Arrendatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "chalet-serra-e-mar": {
+      "id": "chalet-serra-e-mar",
+      "name": "Chalet Serra e Mar",
+      "address": "Estrada Rua Serra Mãe Portinho da Arrábida, 2925-378 Azeitão",
+      "al": "135684/AL",
+      "type": "Moradia",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "LGM, Multigestão, Lda (Comodatário, AL holder, not the owner), 914626733",
+      "email": "chaletmachado@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin",
+      "listing": "https://www.vrbo.com/pt-pt/arrendamento-ferias/p11588800",
+      "site": "Vrbo",
+      "notes": "RNAL registered 2023-01-11, opened 2023-01-01. 10 guests, 5 rooms, 6 beds. Holder role: Comodatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casal-de-alecrim": {
+      "id": "casal-de-alecrim",
+      "name": "Casal de Alecrim",
+      "address": "Rua Alto das Necessidades, 73 e 75, 2925-055 Azeitão",
+      "al": "131198/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "LICO HELENO, LDA",
+      "ownerIs": "Company",
+      "email": "cristianaheleno@icloud.com",
+      "phone": "917309192",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2022-08-12, opened 2022-07-05. 10 guests, 4 rooms, 7 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casal-da-anicha": {
+      "id": "casal-da-anicha",
+      "name": "Casal da Anicha",
+      "address": "Estrada Vale da Rasca, 2900-682 Setúbal",
+      "al": "130212/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Luís Miguel Baptista Rato Negrinho",
+      "ownerIs": "Private individual, resident",
+      "email": "luisnegrinho@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2022-07-22, opened 2022-08-01. 10 guests, 5 rooms, 6 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-picao-22": {
+      "id": "casa-picao-22",
+      "name": "Casa Picão 22",
+      "address": "Rua Tojo, 22, 2925-759 Quinta do Picão",
+      "al": "129025/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "QUINTQ DQ BASSAQUEIRA SOCIEDADE IMOBILIARIA E AGRICOLA LDA (Arrendatário, AL holder, not the owner), 213870145965801211",
+      "email": "pedro.falcao@amaralefilhas.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2022-06-28, opened 2022-06-09. 10 guests, 5 rooms, 5 beds. Holder role: Arrendatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-arbutus": {
+      "id": "casa-arbutus",
+      "name": "Casa Arbutus",
+      "address": "Estrada do Vale da Rasca, CCI 3204, 2900-580 Setúbal",
+      "al": "128929/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Unknown",
+      "keyholder": " (Arrendatário, AL holder, not the owner), 919490616",
+      "email": "cotoviadprado@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2022-06-24, opened 2022-07-01. 10 guests, 4 rooms, 5 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casal-de-assis": {
+      "id": "casal-de-assis",
+      "name": "Casal de Assis",
+      "address": "Estrada Castelo de São Filipe Serra de S. Filipe, 2900-300 Setúbal",
+      "al": "125286/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "M Ferro e Filhos Lda (Arrendatário, AL holder, not the owner), 917285571",
+      "email": "ferrohilion@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2022-04-07, opened 2022-05-26. 10 guests, 5 rooms, 6 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-6": {
+      "id": "casa-6",
+      "name": "Casa 6",
+      "address": "Estrada Portinho da Arrábida, 6 Setúbal, 2925-378 Azeitão",
+      "al": "122615/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "VS HERITAGE, UNIPESSOAL LDA (Comodatário, AL holder, not the owner), 913539798",
+      "email": "pp@vasconcellossouza.pt",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2022-01-26, opened 2022-01-11. 8 guests, 4 rooms, 4 beds. Holder role: Comodatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "quinta-dos-pinheiros-mansos": {
+      "id": "quinta-dos-pinheiros-mansos",
+      "name": "Quinta dos Pinheiros Mansos",
+      "address": "Rua Celestino Cachão, 14, 2925-368 Aldeia da Piedade",
+      "al": "122546/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Priyanka Amandine Singh",
+      "ownerIs": "Private individual, resident",
+      "email": "contact@casashelter.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin",
+      "listing": "https://www.fewo-direkt.de/ferienwohnung-ferienhaus/p2332739a",
+      "site": "FeWo-direkt",
+      "notes": "RNAL registered 2022-01-22, opened 2021-10-08. 8 guests, 4 rooms, 8 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "machamba": {
+      "id": "machamba",
+      "name": "Machamba",
+      "address": "Estrada Picheleiros, 250 Azeitão, 2925-346 Picheleiros",
+      "al": "116107/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "marta martins",
+      "ownerIs": "Private individual, resident",
+      "email": "geral.adv.fam@sapo.pt",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2021-05-14, opened 2021-06-01. 9 guests, 4 rooms, 5 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-da-ancora": {
+      "id": "casa-da-ancora",
+      "name": "CASA DA ANCORA",
+      "address": "Estrada Portinho da Arrábida - Casa 13 - CASA DA ANCORA, 13 Portinho da Arrábida, 2925-378 Azeitão",
+      "al": "109543/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Sália Maria Grilo Fernandes Tiago",
+      "ownerIs": "Private individual, resident",
+      "email": "saliatiago@netcabo.pt",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2020-05-08, opened 2020-05-01. 8 guests, 4 rooms, 5 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "ocean-cottage-arrabida": {
+      "id": "ocean-cottage-arrabida",
+      "name": "Ocean Cottage Arrábida",
+      "address": "Estrada Vale da Rasca rua lameiras de baixo, 2900-682 Setúbal",
+      "al": "109489/AL",
+      "type": "Moradia",
+      "beds": "1",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "ricardojoao docarmopinto",
+      "ownerIs": "Private individual, resident",
+      "email": "ricardocarmopinto@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2020-05-05, opened 2020-07-01. 3 guests, 1 rooms, 2 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "white-house-i": {
+      "id": "white-house-i",
+      "name": "WHITE HOUSE I",
+      "address": "Travessa Estorninhos PICHELEIROS, 2925-002 Brejos de Azeitão",
+      "al": "108011/AL",
+      "type": "Moradia",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "PRIMO SEGRETO, UNIPESSOAL LDA (Comodatário, AL holder, not the owner), 919590061",
+      "email": "cedricolibet@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2020-02-28, opened 2020-02-13. 10 guests, 5 rooms, 5 beds. Holder role: Comodatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "quinta-da-periquita": {
+      "id": "quinta-da-periquita",
+      "name": "Quinta da Periquita",
+      "address": "Estrada de Barrancos, 1 Aldeia da Portela, 2925-374 Aldeia da Piedade",
+      "al": "96576/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Frank Voorbergen",
+      "ownerIs": "Private individual, resident",
+      "email": "fvoorbergen@hotmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin",
+      "listing": "https://www.airbnb.com/rooms/35506632",
+      "site": "Airbnb",
+      "notes": "RNAL registered 2019-05-22, opened 2019-06-01. 8 guests, 4 rooms, 4 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casalinho-santo-antonio-quinta-do-pico": {
+      "id": "casalinho-santo-antonio-quinta-do-pico",
+      "name": "Casalinho Santo António / Quinta do Pico",
+      "address": "Estrada dos Picheleiros - Casalinho Santo António - Quinta do Pico, 2925-001 Azeitão",
+      "al": "94866/AL",
+      "type": "Quinta",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Leonel Baltazar Duarte Canelas",
+      "ownerIs": "Private individual, resident",
+      "email": "canelas.leonel@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2019-04-20, opened 2019-06-01. 6 guests, 2 rooms, 5 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "arrabida-lodge": {
+      "id": "arrabida-lodge",
+      "name": "Arrábida Lodge",
+      "address": "Estrada de Barrancos, 3, 2925-367 Aldeia da Portela",
+      "al": "78018/AL",
+      "type": "Moradia",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Ana Luísa Santos Constantino",
+      "ownerIs": "Private individual, resident",
+      "email": "ana.constantino012@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2018-07-18, opened 2018-08-01. 4 guests, 2 rooms, 2 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "charming-country-villa-with-pool": {
+      "id": "charming-country-villa-with-pool",
+      "name": "Charming Country Villa with Pool",
+      "address": "Estrada de São Pedro, Quinta de São Pedro, Aldeida de São Pedro e Aldeia da Piedade, 2925-002 Aldeida de São Pedro",
+      "al": "76576/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Sociedade agricola civil do Jasmim S.A.",
+      "ownerIs": "Company",
+      "email": "mariachbelamorais@gmail.com",
+      "phone": "917858269",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "Holder is Sociedade Agrícola Civil do Jasmim SA, Quinta de São Pedro, an estate company. RNAL registered 2018-07-03, opened 2018-05-01. 10 guests, 5 rooms, 8 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casal-de-alcube": {
+      "id": "casal-de-alcube",
+      "name": "Casal de Alcube",
+      "address": "Rua Alto das Necessidades, 93 Vale de Alcube, 2925-055 Vale de Alcube",
+      "al": "73251/AL",
+      "type": "Quinta",
+      "beds": "6",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Fleming - Investimentos e Serviços de Gestão, S.A.",
+      "ownerIs": "Company",
+      "email": "fleming@flmng.com",
+      "phone": "910169032",
+      "nextAction": "Find the house on satellite and place the pin",
+      "listing": "https://www.sol-domus.com/casal-de-alcube/",
+      "site": "sol-domus.com",
+      "notes": "Holder is Fleming Investimentos SA, a corporate owner. RNAL registered 2018-05-29, opened 2018-06-30. 12 guests, 6 rooms, 10 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "janota-week-jacuzzi": {
+      "id": "janota-week-jacuzzi",
+      "name": "Janota Week Jacuzzi",
+      "address": "1ª Rua Estrada Machadas, 52, 2900-465 Setubal",
+      "al": "65093/AL",
+      "type": "Moradia",
+      "beds": "1",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "Janota Reflexão Lda (Arrendatário, AL holder, not the owner), 963874017",
+      "email": "janotalda@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2018-02-22, opened 2018-02-22. 8 guests, 1 rooms, 5 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "janota-week-pool": {
+      "id": "janota-week-pool",
+      "name": "Janota Week Pool",
+      "address": "1ª Rua Estrada Machadas, 46, 2900-465 Setubal",
+      "al": "65083/AL",
+      "type": "Moradia",
+      "beds": "1",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "Janota Reflexão Lda (Arrendatário, AL holder, not the owner), 963874017",
+      "email": "janotalda@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2018-02-22, opened 2018-02-22. 6 guests, 1 rooms, 3 beds. Holder role: Arrendatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casalinho-do-monte": {
+      "id": "casalinho-do-monte",
+      "name": "Casalinho do Monte",
+      "address": "Rua Alto das Necessidades-Serra de São Francisco -Casalinho do Monte Azeitao, 2925-001 Azeitao",
+      "al": "62660/AL",
+      "type": "Quinta",
+      "beds": "6",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Glossygrey-Lda",
+      "ownerIs": "Company",
+      "email": "info@villabranca.net",
+      "phone": "961560506",
+      "nextAction": "Find the house on satellite and place the pin",
+      "listing": "https://www.villabranca.net",
+      "site": "villabranca.net",
+      "notes": "RNAL registered 2018-01-17, opened 2018-05-01. 10 guests, 6 rooms, 7 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "quinta-villa-arrabida": {
+      "id": "quinta-villa-arrabida",
+      "name": "Quinta Villa Arrábida",
+      "address": "Estrada Picheleiros Picheleiros, 2925-346 Vila Nogueira de Azeitão",
+      "al": "62288/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "António José Pires Da Silva Dias",
+      "ownerIs": "Private individual, resident",
+      "email": "ajdias.585@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2018-01-11, opened 2018-01-11. 10 guests, 5 rooms, 6 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-de-baixo": {
+      "id": "casa-de-baixo",
+      "name": "Casa de Baixo",
+      "address": "Estrada dos Picheleiros, 31, 2925-346 São Simão",
+      "al": "61202/AL",
+      "type": "Moradia",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "Colinavista Turismo Rural Lda (Comodatário, AL holder, not the owner), 918268014",
+      "email": "manuelqueiroz4321@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2017-12-21, opened 2018-01-01. 4 guests, 2 rooms, 3 beds. Holder role: Comodatário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "villa-santa-barbara": {
+      "id": "villa-santa-barbara",
+      "name": "Villa Santa Barbara",
+      "address": "Estrada Vale da Rasca Arrábida, 2900-682 Setúbal",
+      "al": "58366/AL",
+      "type": "Moradia",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Nuno Miguel Santa Bárbara Gonçalves",
+      "ownerIs": "Private individual, resident",
+      "email": "luziammartins@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2017-10-17, opened 2017-11-01. 7 guests, 2 rooms, 5 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "panorama": {
+      "id": "panorama",
+      "name": "Panorama",
+      "address": "1ª Rua Celestino Cachão, 7 Casal da Portela, 2925-368 Azeitao",
+      "al": "56767/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Pedro Fernandes",
+      "ownerIs": "Private individual, resident",
+      "email": "pfpcm09@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2017-09-16, opened 2017-09-16. 10 guests, 5 rooms, 9 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "prana-nature-lda": {
+      "id": "prana-nature-lda",
+      "name": "Prana Nature Lda",
+      "address": "Estrada ESTRADA DAS MACHADAS, 2900-002 ESTRADA DAS MACHADAS - QUINTA DE SANTO ANTÓNIO DO GALVÃO",
+      "al": "52445/AL",
+      "type": "Quinta",
+      "beds": "6",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Company",
+      "keyholder": "PRANA NATURE LDA. (Outro, AL holder, not the owner), 917363154",
+      "email": "pujaa@tejobrinde.pt",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2017-07-21, opened 2017-07-21. 16 guests, 6 rooms, 12 beds. Holder role: Outro. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-da-vinha-azeitao": {
+      "id": "casa-da-vinha-azeitao",
+      "name": "Casa da Vinha Azeitao",
+      "address": "1ª Rua Picheleiros, 58 Vila Nogueira de Azeitão, 2925-511 Vila Nogueira de Azeitão",
+      "al": "47337/AL",
+      "type": "Moradia",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Unknown",
+      "keyholder": "ARJODRI Alojamento Local e Consultoria Informatica (Comodatário, AL holder, not the owner), 965101255",
+      "email": "arjodri17@gmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin",
+      "listing": "https://www.booking.com/hotel/pt/casa-da-vinha-azeitao.html",
+      "site": "Booking",
+      "notes": "RNAL registered 2017-06-03, opened 2017-06-17. 9 guests, 3 rooms, 6 beds. Holder role: Comodatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casinha-de-azeitao": {
+      "id": "casinha-de-azeitao",
+      "name": "Casinha de Azeitão",
+      "address": "Estrada Barrancos, 4 - - Azeitão, 2925-367 Aldeia da Piedade",
+      "al": "40677/AL",
+      "type": "Moradia",
+      "beds": "1",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "",
+      "ownerIs": "Unknown",
+      "keyholder": "MARIA GUILHERMINA GOMES TEIXEIRA (Comodatário, AL holder, not the owner)",
+      "email": "maguit10@hotmail.com",
+      "nextAction": "Pull the certidão predial to find the landowner, then place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2017-03-02, opened 2017-03-02. 4 guests, 1 rooms, 3 beds. Holder role: Comodatário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-de-sao-lourenco": {
+      "id": "casa-de-sao-lourenco",
+      "name": "Casa de São Lourenço",
+      "address": "Estrada Parral Sítio da Periquita, 2925-373 Aldeia da Piedade",
+      "al": "37505/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "SOFIA DE SEQUEIRA BRAGA DA CRUZ MATA GUEDES",
+      "ownerIs": "Private individual, resident",
+      "email": "sofianguedes@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2016-12-07, opened 2016-12-07. 8 guests, 4 rooms, 4 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "moita-do-gato": {
+      "id": "moita-do-gato",
+      "name": "Moita do Gato",
+      "address": "Estrada Picheleiros, S/N - - Picheleiros, 2925-346 Picheleiros",
+      "al": "32721/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "ANTÓNIO FERNANDES DUARTE SILVA",
+      "ownerIs": "Private individual, resident",
+      "email": "afds59@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2016-07-21, opened 2016-07-21. 8 guests, 4 rooms, 8 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casa-do-portinho": {
+      "id": "casa-do-portinho",
+      "name": "Casa do Portinho",
+      "address": "Estrada Portinho da Arrábida, 4, 2925-378 Azeitão",
+      "al": "32695/AL",
+      "type": "Moradia",
+      "beds": "2",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Marília Lopes Cravo",
+      "ownerIs": "Private individual, resident",
+      "email": "marilia.cravo@sapo.pt",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2016-07-20, opened 2016-07-20. 8 guests, 2 rooms, 4 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "quinta-do-vale-silva": {
+      "id": "quinta-do-vale-silva",
+      "name": "Quinta do Vale Silva",
+      "address": "Estrada dos Picheleiros Quinta do Vale Silva, Picheleiros, 2925-346 Vila Nogueira de Azeitão, Setúbal",
+      "al": "22276/AL",
+      "type": "Quinta",
+      "beds": "5",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Sociedade Agrícola do Vale Silva, Lda.",
+      "ownerIs": "Company",
+      "email": "sbr@netcabo.pt",
+      "phone": "936435033",
+      "nextAction": "Find the house on satellite and place the pin",
+      "listing": "https://www.facebook.com/quintadovalesilva/",
+      "site": "Facebook",
+      "notes": "RNAL registered 2015-11-27, opened 2016-01-02. 10 guests, 5 rooms, 6 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "quinta": {
+      "id": "quinta",
+      "name": "Quinta",
+      "address": "Casal da Serra Quinta da Serra, 2925-758 Quinta da Serra",
+      "al": "9459/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Maria Corrêa Henriques d`Avillez de Almeida",
+      "ownerIs": "Private individual, resident",
+      "email": "maria.avillez@netcabo.pt",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "Third d'Avillez holding on the Quinta da Serra estate alongside 27290/AL and 20177/AL. One family conversation covers all three. RNAL registered 2015-03-17, opened 2015-03-20. 8 guests, 4 rooms, 7 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "sea-country-side-villa-mar-campo-vila": {
+      "id": "sea-country-side-villa-mar-campo-vila",
+      "name": "SEA & COUNTRY SIDE VILLA MAR & CAMPO VILA",
+      "address": "Estrada Barrancos, 19 ALDEIA DA PORTELA, 2925-367 Aldeia da Piedade",
+      "al": "5895/AL",
+      "type": "Moradia",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "ROGERIO MANUEL ROMAO CARREIRO FERNANDES FERREIRA",
+      "ownerIs": "Private individual, resident",
+      "email": "tiagosantospereira@oquotidiano.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin",
+      "listing": "https://www.airbnb.com/rooms/2714605",
+      "site": "Airbnb",
+      "notes": "Airbnb match (Arrábida Sea & Country side Villa, rooms/2714605) is by name and area, confirm on the listing. RNAL registered 2015-01-30, opened 2015-01-30. 8 guests, 4 rooms, 6 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casal-do-bispo": {
+      "id": "casal-do-bispo",
+      "name": "Casal do Bispo",
+      "address": "Estrada Romanos EN 379 KM 0.2, 2925-614 Aldeia da Piedade",
+      "al": "13538/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Jaime de Macedo Santos Bastos",
+      "ownerIs": "Private individual, resident",
+      "email": "jmsbastos@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2013-07-22, opened 2013-07-22. 8 guests, 4 rooms, 7 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    },
+    "casal-do-alecrim": {
+      "id": "casal-do-alecrim",
+      "name": "Casal do Alecrim",
+      "address": "Rua Alto das Necessidades, 73/75, 2900-731 Setúbal",
+      "al": "24147/AL",
+      "type": "Quinta",
+      "beds": "4",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Alberto Guilherme da Silva Alves",
+      "ownerIs": "Private individual, resident",
+      "email": "alvesla2010@hotmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2013-06-28, opened 2013-07-01. 8 guests, 4 rooms, 6 beds. Holder role: Proprietário. Parish S.Julião, N.S. da Anunciada e S.Maria da Graça. Not pinned, the register gives the road but not the plot."
+    },
+    "casa-sul-mar": {
+      "id": "casa-sul-mar",
+      "name": "Casa Sul Mar",
+      "address": "Estrada Portinho da Arrábida R/c D, 2925-378 Azeitão",
+      "al": "24369/AL",
+      "type": "Moradia",
+      "beds": "3",
+      "status": "none",
+      "pinStatus": "",
+      "log": [
+        {
+          "date": "2026-10-02",
+          "text": "Added from the RNAL Setúbal export. Holder details from the register."
+        }
+      ],
+      "owner": "Pedro Soares Vieira",
+      "ownerIs": "Private individual, resident",
+      "email": "casasulmar@gmail.com",
+      "phone": "",
+      "nextAction": "Find the house on satellite and place the pin. No listing link found yet, search the name on Airbnb and Booking",
+      "notes": "RNAL registered 2013-03-01, opened 2013-04-01. 6 guests, 3 rooms, 5 beds. Holder role: Proprietário. Parish Azeitão (São Lourenço e São Simão). Not pinned, the register gives the road but not the plot."
+    }
+  }
+}

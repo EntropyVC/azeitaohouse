@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Azeitão Map">
+<meta name="robots" content="noindex">
+<title>Azeitão Property Map</title>
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&display=swap">
+<style>
+:root{
+  --bg:#ECEEE8; --paper:#F8F8F4; --ink:#1E2622; --muted:#5E6962; --line:#CBD0C6;
+  --accent:#1D5C8C; --accent-ink:#fff; --soft:#DCE6EC;
+  --s-none:#8A948D; --s-letter:#B98A1E; --s-talks:#1D5C8C; --s-offer:#7A3E9D; --s-declined:#A8372F; --s-bought:#2E7D4F;
+  --display:"Fraunces",Georgia,serif; --body:"Archivo","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#161A18; --paper:#1F2522; --ink:#E8EAE4; --muted:#9AA39C; --line:#343C37;
+  --accent:#6FA9D6; --accent-ink:#0F1A24; --soft:#24313A;
+  --s-none:#7D877F; --s-letter:#D1A53A; --s-talks:#6FA9D6; --s-offer:#B182D1; --s-declined:#D9655C; --s-bought:#5CB37E;
+  color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--body);display:flex;flex-direction:column}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--paper);flex-wrap:wrap}
+header h1{font:600 22px/1.1 var(--display);margin:0}
+header .sub{color:var(--muted);font-size:12px}
+.spacer{flex:1}
+.counts{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.counts b{color:var(--ink);font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:7px 12px;font-weight:500;font-size:13px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.on{background:var(--soft);border-color:var(--accent)}
+.btn.danger{color:var(--s-declined)}
+.btn:disabled{opacity:.5;cursor:default}
+main{flex:1;min-height:0;display:grid;grid-template-columns:300px 1fr;position:relative}
+aside.list{border-right:1px solid var(--line);background:var(--paper);display:flex;flex-direction:column;min-width:0}
+.tools{padding:10px 12px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
+.tools input,.tools select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.rows{overflow:auto;flex:1}
+.row{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:start;padding:10px 12px;border:0;border-bottom:1px solid var(--line);width:100%;text-align:left;background:none}
+.row:hover{background:var(--bg)}
+.row.sel{background:var(--soft)}
+.row .dot{width:10px;height:10px;border-radius:50%;margin-top:5px}
+.row .addr{font-weight:600;overflow-wrap:anywhere}
+.row .meta{color:var(--muted);font-size:12px}
+.row .ref{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.empty{padding:28px 16px;color:var(--muted);font-size:13px}
+#map{position:absolute;inset:0;background:var(--bg)}
+.mapwrap{position:relative;min-width:0;min-height:60vh}
+.mapwrap.adding .leaflet-container{cursor:crosshair}
+.hint{position:absolute;left:12px;bottom:12px;z-index:500;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--muted);max-width:360px}
+.legend{position:absolute;right:12px;bottom:12px;z-index:500;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.pinicon{background:none;border:0}
+.pinicon svg{width:22px;height:30px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.pinicon.sel svg{transform:scale(1.3);transform-origin:bottom center}
+.leaflet-container{font:inherit}
+.leaflet-popup-content{font:13px var(--body);margin:10px 12px}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:420px;max-width:100%;background:var(--paper);border-left:1px solid var(--line);display:flex;flex-direction:column;z-index:1100;box-shadow:-6px 0 20px rgba(0,0,0,.1)}
+.drawer[hidden]{display:none}
+.drawer .head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.drawer .head h2{font:600 18px/1.2 var(--display);margin:0;flex:1;min-width:0;overflow-wrap:anywhere}
+.drawer form{overflow:auto;padding:14px 16px 24px;display:flex;flex-direction:column;gap:14px}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:4px;font-weight:600}
+.f{display:flex;flex-direction:column;gap:3px}
+.f label{font-size:12px;color:var(--muted)}
+.f input,.f select,.f textarea{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);width:100%}
+.f textarea{min-height:64px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.addrrow{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:end}
+.log{display:flex;flex-direction:column;gap:6px}
+.log .e{display:grid;grid-template-columns:76px 1fr auto;gap:8px;font-size:12px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.log .e time{color:var(--muted);font-variant-numeric:tabular-nums}
+.log .e button{background:none;border:0;color:var(--muted);padding:0}
+.addlog{display:grid;grid-template-columns:1fr auto;gap:6px}
+.links{display:flex;gap:10px;flex-wrap:wrap}
+.links a{color:var(--accent);font-size:12px}
+.foot{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--line);align-items:center}
+.foot .state{font-size:12px;color:var(--muted);flex:1}
+.confirm{display:flex;gap:6px;align-items:center;font-size:12px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:13px;z-index:1300}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1200;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal[hidden]{display:none}
+.modal .card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px;width:480px;max-width:100%;display:flex;flex-direction:column;gap:12px}
+.modal h2{font:600 20px/1.2 var(--display);margin:0}
+.muted{color:var(--muted);margin:0;font-size:13px}
+.small{font-size:12px}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.todo{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--bg)}
+.todo button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 10px;font-size:12px;color:var(--ink)}
+.todo button.warn{border-color:var(--s-letter);color:var(--s-letter)}
+.todo .done{font-size:12px;color:var(--s-bought);align-self:center}
+.menu{position:relative}
+.menu .dd{position:absolute;right:0;top:calc(100% + 4px);background:var(--paper);border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;min-width:200px;z-index:700;box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:1250}
+.menu .dd[hidden]{display:none}
+.menu .dd button{background:none;border:0;text-align:left;padding:9px 12px;font-size:13px}
+.menu .dd button:hover{background:var(--bg)}
+@media (max-width:760px){
+  main{grid-template-columns:1fr}
+  aside.list{position:absolute;inset:0;z-index:1050}
+  aside.list[hidden]{display:none}
+  .drawer{width:100%}
+  header h1{font-size:18px}
+}
+
+.login{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px}
+.login[hidden]{display:none}
+.login .card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:24px;width:360px;max-width:100%;display:flex;flex-direction:column;gap:12px}
+.login h1{font:600 22px/1.1 var(--display);margin:0}
+.scanfab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.cands{display:flex;flex-direction:column;gap:6px}
+.cands button{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:9px 12px}
+.cands button b{display:block}
+.cands button span{font-size:12px;color:var(--muted)}
+.ocr{font-size:12px;color:var(--muted);white-space:pre-wrap;max-height:90px;overflow:auto;background:var(--bg);border-radius:6px;padding:8px}
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.photos a{display:block;width:96px;height:96px;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:var(--bg)}
+.photos img{width:100%;height:100%;object-fit:cover;display:block}
+.who{font-size:12px;color:var(--muted)}
+@media (max-width:760px){header .sub{display:none}header{gap:8px;padding:8px 12px}.counts{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Azeitão Property Map</h1><div class="sub">Short-let properties, owners and approach status</div></div>
+  <div class="spacer"></div>
+  <div class="counts" id="counts"></div>
+  <button class="btn" id="toggleList" hidden>List</button>
+  <div class="menu">
+    <button class="btn" id="dataBtn">Data</button>
+    <div class="dd" id="dataMenu" hidden>
+      <button type="button" id="exportBtn">Export to file (.json)</button>
+      <button type="button" id="exportCsv">Export to spreadsheet (.csv)</button>
+      <button type="button" id="importBtn">Import from file</button>
+      <button type="button" id="lookupBtn">Copy owner lookup list</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+  </div>
+  <button class="btn primary" id="addBtn">Add property</button>
+  <button class="btn" id="signOut" title="Sign out">Out</button>
+</header>
+<button class="btn primary scanfab" id="scanFab" hidden>Scan gate</button>
+<input type="file" id="scanFile" accept="image/*" capture="environment" hidden>
+<input type="file" id="photoFile" accept="image/*" capture="environment" hidden>
+
+<div class="login" id="login" hidden>
+  <form class="card" id="loginForm">
+    <h1>Azeitão Property Map</h1>
+    <p class="muted">Sign in to open the map.</p>
+    <div class="f"><label for="lEmail">Email</label><input id="lEmail" type="email" autocomplete="username" required></div>
+    <div class="f"><label for="lPass">Password</label><input id="lPass" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary" type="submit" id="loginBtn">Sign in</button>
+    <p class="muted small" id="loginNote"></p>
+  </form>
+</div>
+
+<div class="modal" id="scanModal" hidden>
+  <div class="card">
+    <h2>Gate sign</h2>
+    <p class="muted" id="scanState">Reading the sign…</p>
+    <div class="ocr" id="ocrText" hidden></div>
+    <div class="cands" id="cands"></div>
+    <div class="f"><label for="scanQ">Or search a record</label><input id="scanQ" placeholder="Type part of the name"></div>
+    <div class="actions"><button type="button" class="btn" id="scanCancel">Cancel</button><span class="spacer"></span><button type="button" class="btn" id="scanNew">New property here</button></div>
+  </div>
+</div>
+
+<div class="modal" id="addModal" hidden>
+  <div class="card">
+    <h2>Add a property</h2>
+    <p class="muted">Fill in whatever you have. Anything missing becomes a to-do on the record.</p>
+    <div class="f"><label for="nName">Villa or listing name</label><input id="nName" placeholder="Casa da Oliveira"></div>
+    <div class="f"><label for="nLink">Airbnb, Booking or other listing link</label><input id="nLink" placeholder="https://www.airbnb.com/rooms/..."></div>
+    <div class="f"><label for="nAddr">Address or place</label><input id="nAddr" placeholder="Rua ..., Vila Nogueira de Azeitão, or a landmark"></div>
+    <div class="f"><label for="nAL">AL registration number, if known</label><input id="nAL" placeholder="12345/AL"></div>
+    <div class="actions">
+      <button type="button" class="btn" id="nCancel">Cancel</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="nPlace">Add and click location on map</button>
+      <button type="button" class="btn primary" id="nAdd">Add</button>
+    </div>
+    <p class="muted small" id="nNote"></p>
+  </div>
+</div>
+
+<main>
+  <aside class="list" id="list">
+    <div class="tools">
+      <input id="q" type="search" placeholder="Search address, owner, AL number" aria-label="Search">
+      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option></select>
+    </div>
+    <div class="rows" id="rows"></div>
+  </aside>
+
+  <section class="mapwrap" id="mapwrap">
+    <div id="map"></div>
+    <div class="hint" id="hint" hidden></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <div class="drawer" id="drawer" hidden>
+    <div class="head">
+      <h2 id="dTitle">Property</h2>
+      <button class="btn" id="locateBtn" title="Click on the map to move the pin">Move pin</button>
+      <button class="btn" id="closeBtn">Close</button>
+    </div>
+    <div class="todo" id="todo"></div>
+    <form id="form">
+      <fieldset>
+        <legend>Property</legend>
+        <div class="f"><label for="name">Villa or listing name</label><input id="name" name="name" placeholder="As it appears on the listing"></div>
+        <div class="addrrow">
+          <div class="f"><label for="address">Address</label><input id="address" name="address" placeholder="Rua ..., Vila Nogueira de Azeitão"></div>
+          <button type="button" class="btn" id="geoBtn" title="Find this address on the map">Locate</button>
+        </div>
+        <div class="g2">
+          <div class="f"><label for="al">AL registration (RNAL)</label><input id="al" name="al" placeholder="12345/AL"></div>
+          <div class="f"><label for="type">Type</label><select id="type" name="type"><option>Moradia</option><option>Apartamento</option><option>Quinta</option><option>Terreno</option><option>Other</option></select></div>
+        </div>
+        <div class="g2">
+          <div class="f"><label for="beds">Bedrooms</label><input id="beds" name="beds" type="number" min="0"></div>
+          <div class="f"><label for="area">Area m²</label><input id="area" name="area" type="number" min="0"></div>
+        </div>
+        <div class="g2">
+          <div class="f"><label for="lat">Latitude</label><input id="lat" name="lat"></div>
+          <div class="f"><label for="lng">Longitude</label><input id="lng" name="lng"></div>
+        </div>
+        <div class="f"><label for="pinStatus">Pin status</label><select id="pinStatus" name="pinStatus"><option value="">Not placed</option><option value="approximate">Approximate, needs confirming</option><option value="confirmed">Confirmed on satellite</option></select></div>
+        <div class="f"><label for="listing">Listing link (Airbnb / Booking)</label><input id="listing" name="listing" type="url" placeholder="https://"></div>
+        <div class="links" id="links"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Registry</legend>
+        <div class="g2">
+          <div class="f"><label for="descricao">Nº descrição predial</label><input id="descricao" name="descricao"></div>
+          <div class="f"><label for="artigo">Artigo matricial</label><input id="artigo" name="artigo"></div>
+        </div>
+        <div class="f"><label for="charges">Mortgage / charges</label><input id="charges" name="charges" placeholder="e.g. hipoteca CGD 2019"></div>
+        <div class="g2">
+          <div class="f"><label for="estValue">Estimated value €</label><input id="estValue" name="estValue" type="number" min="0"></div>
+          <div class="f"><label for="offer">Our offer €</label><input id="offer" name="offer" type="number" min="0"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Owner</legend>
+        <div class="f"><label for="owner">Owner name</label><input id="owner" name="owner"></div>
+        <div class="f"><label for="ownerIs">Owner is</label><select id="ownerIs" name="ownerIs"><option>Unknown</option><option>Private individual, resident</option><option>Private individual, non-resident</option><option>Company</option><option>Management company holds AL</option></select></div>
+        <div class="f"><label for="ownerAddr">Owner address (from registry)</label><input id="ownerAddr" name="ownerAddr"></div>
+        <div class="g2">
+          <div class="f"><label for="phone">Phone</label><input id="phone" name="phone"></div>
+          <div class="f"><label for="email">Email</label><input id="email" name="email"></div>
+        </div>
+        <div class="f"><label for="keyholder">Key holder / cleaner / agent</label><input id="keyholder" name="keyholder"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Approach</legend>
+        <div class="g2">
+          <div class="f"><label for="status">Status</label><select id="status" name="status"></select></div>
+          <div class="f"><label for="nextDate">Next action date</label><input id="nextDate" name="nextDate" type="date"></div>
+        </div>
+        <div class="f"><label for="nextAction">Next action</label><input id="nextAction" name="nextAction" placeholder="Send letter, call cleaner, chase solicitador"></div>
+        <div class="f"><label for="notes">Notes</label><textarea id="notes" name="notes"></textarea></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Photos</legend>
+        <div class="photos" id="photos"></div>
+        <div class="actions"><button type="button" class="btn" id="photoBtn">Add photo</button><button type="button" class="btn" id="hereBtn">Pin at my location</button></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Contact log</legend>
+        <div class="log" id="log"></div>
+        <div class="addlog"><input id="logText" placeholder="What happened" aria-label="Log entry"><button type="button" class="btn" id="logAdd">Add</button></div>
+      </fieldset>
+    </form>
+    <div class="foot">
+      <span class="state" id="saveState"></span>
+      <span class="confirm" id="delConfirm" hidden>Delete this record? <button type="button" class="btn danger" id="delYes">Delete</button><button type="button" class="btn" id="delNo">Keep</button></span>
+      <button type="button" class="btn danger" id="delBtn">Delete</button>
+      <button type="button" class="btn primary" id="saveBtn">Save</button>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+const SB_URL="https://onmuenuokmiwmonfdozh.supabase.co", SB_KEY="sb_publishable_0WS3C6URygYS72m2oV_eLg_qI2KXisC";
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+let me=null;
+const STATUSES=[["none","Not contacted","--s-none"],["letter","Letter sent","--s-letter"],["talks","In talks","--s-talks"],["offer","Offer made","--s-offer"],["declined","Declined","--s-declined"],["bought","Bought","--s-bought"]];
+const FIELDS=["name","address","pinStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
+const $=id=>document.getElementById(id);
+let props={}, sel=null, placing=false, adding=false, dirty=false, markers={}, pendingAdd=null;
+
+function createRecord(init){
+  const id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  props[id]={id,name:"",address:"",al:"",listing:"",status:"none",type:"Moradia",ownerIs:"Unknown",log:[],created:Date.now(),updated:Date.now(),...init};
+  return id;
+}
+// Pull what a listing link tells us without fetching it
+function parseListing(url){
+  const out={listing:url.trim()};
+  try{const u=new URL(out.listing);
+    if(/airbnb\./.test(u.host)){const m=u.pathname.match(/rooms\/(?:plus\/)?(\d+)/);if(m)out.listingId="airbnb:"+m[1];out.site="Airbnb";u.search="";out.listing=u.toString()}
+    else if(/booking\.com/.test(u.host)){const m=u.pathname.match(/hotel\/pt\/([^.]+)/);if(m){out.listingId="booking:"+m[1];if(!out.name)out.nameHint=m[1].replace(/-/g," ")}out.site="Booking";u.search="";out.listing=u.toString()}
+    else if(/vrbo|homeaway/.test(u.host)){out.site="Vrbo"}
+    else if(/idealista/.test(u.host)){out.site="Idealista"}
+    else out.site=u.host.replace(/^www\./,"");
+  }catch(e){}
+  return out;
+}
+const missing=p=>({pin:isNaN(parseFloat(p.lat)),confirm:!isNaN(parseFloat(p.lat))&&p.pinStatus!=="confirmed",al:!p.al,owner:!p.owner,contact:!(p.phone||p.email||p.ownerAddr),address:!p.address});
+
+for(const [v,l,c] of STATUSES){
+  $("status").add(new Option(l,v)); $("fStatus").add(new Option(l,v));
+  const s=document.createElement("span"); s.innerHTML=`<i style="background:var(${c})"></i>${l}`; $("legend").appendChild(s);
+}
+{const s=document.createElement("span");s.innerHTML='<i style="border:2px dashed var(--muted);background:none"></i>Approximate pin';$("legend").appendChild(s)}
+const sVar=v=>(STATUSES.find(s=>s[0]===v)||STATUSES[0])[2];
+const sColor=v=>getComputedStyle(document.documentElement).getPropertyValue(sVar(v)).trim()||"#888";
+const sLabel=v=>(STATUSES.find(s=>s[0]===v)||STATUSES[0])[1];
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+
+// ---------- storage ----------
+let pending=new Set(), lastSaved={};
+async function load(){
+  const {data,error}=await sb.from("properties").select("id,data"); if(error){toast("Could not load: "+error.message);return}
+  props={}; for(const r of data){props[r.id]={...r.data,id:r.id}; lastSaved[r.id]=JSON.stringify(props[r.id])}
+}
+// store() saves whatever changed since the last save, one row per changed record
+async function store(){
+  const changed=Object.values(props).filter(p=>JSON.stringify(p)!==lastSaved[p.id]);
+  const gone=Object.keys(lastSaved).filter(id=>!props[id]);
+  for(const id of gone){delete lastSaved[id];const {error}=await sb.from("properties").delete().eq("id",id);if(error)toast("Delete failed: "+error.message)}
+  if(changed.length){
+    const rows=changed.map(p=>({id:p.id,data:p,updated_at:new Date().toISOString(),updated_by:me}));
+    const {error}=await sb.from("properties").upsert(rows); if(error){toast("Save failed: "+error.message);return}
+    for(const p of changed) lastSaved[p.id]=JSON.stringify(p);
+  }
+}
+function subscribe(){
+  sb.channel("props").on("postgres_changes",{event:"*",schema:"public",table:"properties"},pl=>{
+    if(pl.eventType==="DELETE"){const id=pl.old.id;if(props[id]&&!(dirty&&sel===id)){delete props[id];delete lastSaved[id];if(sel===id)close();renderAll()}return}
+    const r=pl.new; const v={...r.data,id:r.id}; const s=JSON.stringify(v); if(s===lastSaved[r.id])return;
+    lastSaved[r.id]=s; if(dirty&&sel===r.id){toast("This record was changed elsewhere, your edits will overwrite it");return}
+    props[r.id]=v; if(sel===r.id){open(r.id)} renderAll();
+  }).subscribe();
+}
+
+// ---------- map ----------
+const map=L.map("map",{zoomControl:true}).setView([38.519,-8.985],14);
+const streets=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Tiles &copy; Esri"}).addTo(map);
+const topo=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Tiles &copy; Esri"});
+const sat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Imagery &copy; Esri"});
+L.control.layers({"Streets":streets,"Satellite":sat,"Topographic":topo},null,{position:"topright"}).addTo(map);
+function icon(p){
+  return L.divIcon({className:"pinicon"+(p.id===sel?" sel":""),iconSize:[22,30],iconAnchor:[11,30],popupAnchor:[0,-28],
+    html:p.pinStatus==="confirmed"?`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="${sColor(p.status)}" stroke="rgba(0,0,0,.35)"/><circle cx="11" cy="10.5" r="3.5" fill="#fff"/></svg>`:`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="rgba(255,255,255,.75)" stroke="${sColor(p.status)}" stroke-width="2.5" stroke-dasharray="3 2"/><circle cx="11" cy="10.5" r="3" fill="${sColor(p.status)}"/></svg>`});
+}
+function renderPins(){
+  for(const id in markers){if(!props[id]){map.removeLayer(markers[id]);delete markers[id]}}
+  for(const p of Object.values(props)){
+    const lat=parseFloat(p.lat),lng=parseFloat(p.lng);
+    if(isNaN(lat)||isNaN(lng)){if(markers[p.id]){map.removeLayer(markers[p.id]);delete markers[p.id]}continue}
+    let m=markers[p.id];
+    if(!m){m=L.marker([lat,lng],{icon:icon(p),draggable:true});m.on("click",()=>{if(!placing)open(p.id)});
+      m.on("dragend",e=>{const ll=e.target.getLatLng();props[p.id]={...props[p.id],lat:ll.lat.toFixed(6),lng:ll.lng.toFixed(6),pinStatus:"confirmed"};store();renderPins();if(sel===p.id){$("lat").value=props[p.id].lat;$("lng").value=props[p.id].lng;$("pinStatus").value="confirmed";renderTodo(props[p.id])}});
+      m.addTo(map);markers[p.id]=m}
+    else{m.setLatLng([lat,lng]);m.setIcon(icon(p))}
+    m.bindTooltip(title(p),{direction:"right",offset:[10,-14]});
+  }
+  const unplaced=Object.values(props).filter(p=>isNaN(parseFloat(p.lat))).length;
+  $("hint").hidden=!(placing||adding||unplaced);
+  $("hint").textContent=placing?"Click on the map to place the pin.":adding?"Click on the map where the property sits.":`${unplaced} propert${unplaced===1?"y has":"ies have"} no pin yet. Open one and use Locate or Move pin.`;
+  $("mapwrap").classList.toggle("adding",placing||adding);
+}
+map.on("click",e=>{
+  if(!placing&&!adding) return;
+  const lat=e.latlng.lat.toFixed(6),lng=e.latlng.lng.toFixed(6);
+  if(adding){
+    adding=false;$("addBtn").classList.remove("on");
+    const id=pendingAdd?pendingAdd.id:createRecord({});
+    pendingAdd=null;
+    props[id]={...props[id],lat,lng,pinStatus:"confirmed",updated:Date.now()};
+    store(); open(id); if(!props[id].address) reverseGeocode(id,lat,lng);
+  } else if(placing&&sel){
+    placing=false;$("locateBtn").classList.remove("on");
+    props[sel]={...props[sel],lat,lng,pinStatus:"confirmed",updated:Date.now()};$("lat").value=lat;$("lng").value=lng;$("pinStatus").value="confirmed";$("locateBtn").textContent="Move pin";store();renderAll();renderTodo(current());
+  }
+});
+
+// ---------- geocoding (Nominatim) ----------
+async function geocode(q){
+  const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=pt&q="+encodeURIComponent(q),{headers:{"Accept-Language":"pt"}});
+  const j=await r.json(); return j[0]?{lat:(+j[0].lat).toFixed(6),lng:(+j[0].lon).toFixed(6),name:j[0].display_name}:null;
+}
+async function reverseGeocode(id,lat,lng){
+  try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`,{headers:{"Accept-Language":"pt"}});
+    const j=await r.json(); const a=j.address||{}; const s=[a.road,a.house_number].filter(Boolean).join(" ");
+    const txt=[s,a.village||a.town||a.suburb||a.city].filter(Boolean).join(", ");
+    if(txt&&props[id]&&!props[id].address){props[id]={...props[id],address:txt};store();if(sel===id&&!$("address").value){$("address").value=txt;const c=current();$("dTitle").textContent=title(c);renderTodo(c)}renderList()}
+  }catch(e){}
+}
+$("geoBtn").onclick=async()=>{
+  const q=$("address").value.trim(); if(!q) return;
+  $("geoBtn").disabled=true;
+  try{const g=await geocode(/azeit|setúbal|setubal|portugal/i.test(q)?q:q+", Azeitão, Setúbal, Portugal");
+    if(g){$("lat").value=g.lat;$("lng").value=g.lng;$("pinStatus").value="approximate";setDirty(true);map.setView([g.lat,g.lng],17);toast("Found. Drag the pin if it is slightly off.")}else toast("Address not found. Place the pin by hand.")}
+  catch(e){toast("Geocoding unavailable right now")}
+  $("geoBtn").disabled=false;
+};
+
+// ---------- list ----------
+function renderList(){
+  const q=$("q").value.trim().toLowerCase(), fs=$("fStatus").value;
+  const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:m.contact};
+  const items=Object.values(props).filter(p=>pass(p)&&(!q||[p.name,p.address,p.owner,p.al,p.notes].join(" ").toLowerCase().includes(q)))
+    .sort((a,b)=>title(a).localeCompare(title(b)));
+  const rows=$("rows"); rows.innerHTML="";
+  if(!items.length){rows.innerHTML=`<div class="empty">${Object.keys(props).length?"Nothing matches that search.":"No properties yet. Click Add property, then click the house on the map."}</div>`}
+  for(const p of items){
+    const b=document.createElement("button"); b.type="button"; b.className="row"+(p.id===sel?" sel":"");
+    b.innerHTML=`<span class="dot" style="background:var(${sVar(p.status)})"></span><span><div class="addr"></div><div class="meta"></div></span><span class="ref"></span>`;
+    const m=missing(p);
+    b.querySelector(".addr").textContent=title(p);
+    b.querySelector(".meta").textContent=[p.name&&p.address?p.address:null,p.owner||"Owner unknown",sLabel(p.status),p.nextAction].filter(Boolean).join(" · ");
+    b.querySelector(".ref").textContent=m.pin?"no pin":m.confirm?"pin approx.":(p.al||"");
+    b.onclick=()=>{open(p.id);const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(!isNaN(lat))map.panTo([lat,lng])}; rows.appendChild(b);
+  }
+  const c={}; for(const p of Object.values(props)) c[p.status||"none"]=(c[p.status||"none"]||0)+1;
+  $("counts").innerHTML=`<span><b>${Object.keys(props).length}</b> properties</span>`+STATUSES.filter(s=>c[s[0]]).map(s=>`<span><b>${c[s[0]]}</b> ${s[1].toLowerCase()}</span>`).join("");
+}
+function renderAll(){renderList();renderPins()}
+
+// ---------- drawer ----------
+function open(id){
+  if(dirty&&sel&&sel!==id) save();
+  sel=id; const p=props[id]; if(!p) return;
+  placing=false; adding=false; $("locateBtn").classList.remove("on");
+  for(const f of FIELDS){$(f).value=p[f]??(f==="status"?"none":"")}
+  $("dTitle").textContent=title(p);
+  $("locateBtn").textContent=missing(p).pin?"Place pin":"Move pin";
+  renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); setDirty(false);
+  $("drawer").hidden=false; if(window.innerWidth<=760) $("list").hidden=true;
+  renderAll(); setTimeout(()=>map.invalidateSize(),50);
+}
+function close(){if(dirty)save();sel=null;placing=false;$("drawer").hidden=true;renderAll();setTimeout(()=>map.invalidateSize(),50)}
+function setDirty(d){dirty=d;$("saveState").textContent=d?"Unsaved changes":"";$("saveBtn").disabled=!d}
+const title=p=>p.name||p.address||(p.site?p.site+" listing":"New property");
+$("form").addEventListener("input",()=>{const c=current();setDirty(true);$("dTitle").textContent=title(c);renderLinks(c);renderTodo(c)});
+$("listing").addEventListener("change",()=>{const v=$("listing").value.trim();if(!v||!sel)return;const info=parseListing(v);$("listing").value=info.listing;props[sel]={...props[sel],listingId:info.listingId,site:info.site};if(info.nameHint&&!$("name").value)$("name").value=info.nameHint});
+function renderTodo(p){
+  const T=$("todo"); T.innerHTML=""; const m=missing(p);
+  const items=[
+    m.pin&&["Place on map","warn",()=>{placing=true;$("locateBtn").classList.add("on");renderPins();toast("Click the house on the map")}],
+    m.confirm&&["Confirm pin on satellite","warn",()=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);map.setView([lat,lng],17);sat.addTo(map);toast("Drag the pin onto the house. Dragging marks it confirmed.")}],
+    m.address&&!m.pin&&["Add address","",()=>$("address").focus()],
+    m.al&&["Find AL number",p.listing?"warn":"",()=>{if(p.listing)window.open(p.listing,"_blank");$("al").focus();toast(p.listing?"The AL number is in the listing's details or house rules. Paste it here.":"Search the RNAL register by address, then paste the number.")}],
+    m.owner&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");$("owner").focus();toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
+    m.contact&&!m.owner&&["Add contact details","",()=>$("phone").focus()],
+  ].filter(Boolean);
+  if(!items.length){T.innerHTML='<span class="done">Record complete</span>';return}
+  for(const [l,c,fn] of items){const b=document.createElement("button");b.type="button";b.className=c;b.textContent=l;b.onclick=fn;T.appendChild(b)}
+}
+$("form").addEventListener("submit",e=>{e.preventDefault();save()});
+function current(){const p={...props[sel]};for(const f of FIELDS)p[f]=$(f).value;return p}
+function renderLinks(p){
+  const L_=$("links"); L_.innerHTML="";
+  const lat=parseFloat(p.lat),lng=parseFloat(p.lng);
+  const q=!isNaN(lat)&&!isNaN(lng)?`${lat},${lng}`:(p.address?p.address+", Azeitão, Portugal":"");
+  const add=(href,t)=>{const a=document.createElement("a");a.href=href;a.target="_blank";a.rel="noopener";a.textContent=t;L_.appendChild(a)};
+  if(q) add("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"Google Maps");
+  if(!isNaN(lat)) add(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`,"Street View");
+  if(p.listing) add(p.listing,(p.site||"Listing")+" page");
+  add("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","RNAL register");
+  if(p.al) add("https://www.google.com/search?q="+encodeURIComponent('"'+p.al+'"'),"Search AL number");
+}
+function renderLog(p){
+  const L_=$("log"); L_.innerHTML=""; const log=p.log||[];
+  if(!log.length){L_.innerHTML='<div class="empty" style="padding:6px 0">No contact yet.</div>'}
+  log.slice().reverse().forEach((e,i)=>{
+    const d=document.createElement("div");d.className="e";
+    d.innerHTML=`<time>${e.date}</time><span></span><button type="button" title="Remove">×</button>`;
+    d.querySelector("span").textContent=e.text;
+    d.querySelector("button").onclick=()=>{const idx=log.length-1-i;const nl=log.slice();nl.splice(idx,1);props[sel]={...props[sel],log:nl};store();renderLog(props[sel])};
+    L_.appendChild(d);
+  });
+}
+$("logAdd").onclick=()=>{const t=$("logText").value.trim();if(!t||!sel)return;props[sel]={...props[sel],log:[...(props[sel].log||[]),{date:new Date().toISOString().slice(0,10),text:t}]};$("logText").value="";renderLog(props[sel]);store()};
+$("logText").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("logAdd").click()}});
+function save(){if(!sel)return;const p=current();p.updated=Date.now();props[sel]=p;store();setDirty(false);$("saveState").textContent="Saved";setTimeout(()=>{if($("saveState").textContent==="Saved")$("saveState").textContent=""},1500);renderAll()}
+$("saveBtn").onclick=save;
+$("closeBtn").onclick=close;
+$("delBtn").onclick=()=>{$("delConfirm").hidden=false;$("delBtn").hidden=true};
+$("delNo").onclick=()=>{$("delConfirm").hidden=true;$("delBtn").hidden=false};
+$("delYes").onclick=()=>{const id=sel;$("delConfirm").hidden=true;$("delBtn").hidden=false;delete props[id];dirty=false;sel=null;$("drawer").hidden=true;store();renderAll();toast("Deleted")};
+$("locateBtn").onclick=()=>{placing=!placing;$("locateBtn").classList.toggle("on",placing);renderPins()};
+// ---------- add flow ----------
+$("addBtn").onclick=()=>{
+  if(adding){adding=false;pendingAdd=null;$("addBtn").classList.remove("on");renderPins();return}
+  for(const id of ["nName","nLink","nAddr","nAL"]) $(id).value="";
+  $("nNote").textContent=""; $("addModal").hidden=false; $("nName").focus();
+};
+$("nCancel").onclick=()=>{$("addModal").hidden=true};
+$("addModal").addEventListener("click",e=>{if(e.target===$("addModal"))$("addModal").hidden=true});
+$("nLink").addEventListener("change",()=>{const v=$("nLink").value.trim();if(!v)return;const info=parseListing(v);if(info.nameHint&&!$("nName").value)$("nName").value=info.nameHint;$("nNote").textContent=info.site?`${info.site} link recognised.`:""});
+function gatherNew(){
+  const init={name:$("nName").value.trim(),address:$("nAddr").value.trim(),al:$("nAL").value.trim()};
+  const link=$("nLink").value.trim(); if(link){const info=parseListing(link);init.listing=info.listing;if(info.listingId)init.listingId=info.listingId;if(info.site)init.site=info.site}
+  return init;
+}
+$("nPlace").onclick=()=>{
+  const init=gatherNew(); const id=createRecord(init); store(); $("addModal").hidden=true;
+  pendingAdd={id}; adding=true; $("addBtn").classList.add("on"); if(!$("drawer").hidden) close(); renderAll(); toast("Click the house on the map");
+};
+$("nAdd").onclick=async()=>{
+  const init=gatherNew();
+  if(!init.name&&!init.address&&!init.listing&&!init.al){$("nNote").textContent="Enter at least one of the fields, or use the map button to click the location.";return}
+  $("nAdd").disabled=true; $("nNote").textContent=init.address?"Finding the address on the map…":"";
+  let found=null;
+  if(init.address){try{found=await geocode(/azeit|setúbal|setubal|sesimbra|palmela|portugal/i.test(init.address)?init.address:init.address+", Azeitão, Setúbal, Portugal")}catch(e){}}
+  else if(init.name){try{found=await geocode(init.name+", Azeitão, Portugal")}catch(e){}}
+  $("nAdd").disabled=false;
+  const id=createRecord(init);
+  if(found){props[id].lat=found.lat;props[id].lng=found.lng;props[id].pinStatus="approximate";map.setView([found.lat,found.lng],17)}
+  store(); $("addModal").hidden=true; open(id);
+  toast(found?"Placed on the map. Drag the pin if it is off.":"Added. Use Locate or Move pin to put it on the map.");
+};
+$("q").oninput=renderList; $("fStatus").onchange=renderList;
+$("toggleList").onclick=()=>{$("list").hidden=!$("list").hidden};
+function layout(){const m=window.innerWidth<=760;$("toggleList").hidden=!m;if(!m)$("list").hidden=false}
+window.addEventListener("resize",layout);layout();
+
+// ---------- data menu ----------
+$("dataBtn").onclick=e=>{e.stopPropagation();$("dataMenu").hidden=!$("dataMenu").hidden};
+document.addEventListener("click",()=>{$("dataMenu").hidden=true});
+function download(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+const stamp=()=>new Date().toISOString().slice(0,10);
+$("exportBtn").onclick=()=>download(`azeitao-properties-${stamp()}.json`,JSON.stringify({version:1,exported:new Date().toISOString(),properties:props},null,2),"application/json");
+$("exportCsv").onclick=()=>{
+  const cols=["id",...FIELDS,"log"]; const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const lines=[cols.join(",")];
+  for(const p of Object.values(props)) lines.push(cols.map(c=>esc(c==="log"?(p.log||[]).map(e=>e.date+" "+e.text).join(" | "):c==="status"?sLabel(p.status):p[c])).join(","));
+  download(`azeitao-properties-${stamp()}.csv`,"﻿"+lines.join("\n"),"text/csv");
+};
+$("lookupBtn").onclick=async()=>{
+  const list=Object.values(props).filter(p=>missing(p).owner);
+  if(!list.length){toast("Every record already has an owner");return}
+  const text="Owner lookup list, Azeitão Property Map\n\n"+list.map(p=>[`id: ${p.id}`,`name: ${p.name||""}`,`address: ${p.address||""}`,`AL: ${p.al||""}`,`link: ${p.listing||""}`,`coords: ${p.lat||""},${p.lng||""}`].join("\n")).join("\n\n");
+  try{await navigator.clipboard.writeText(text);toast(`Copied ${list.length} record${list.length===1?"":"s"}. Paste it into the chat for lookup.`)}
+  catch(e){download(`owner-lookup-${stamp()}.txt`,text,"text/plain")}
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=()=>{
+  const f=$("importFile").files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){props[k]={...(props[k]||{}),...inc[k],id:k};n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`)}catch(e){toast("That file could not be read")}};
+  r.readAsText(f); $("importFile").value="";
+};
+window.addEventListener("beforeunload",()=>{if(dirty)save()});
+
+// ---------- auth + boot ----------
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){$("login").hidden=false;return}
+  me=session.user.email; $("login").hidden=true;
+  await load(); renderAll(); subscribe();
+  const placed=Object.values(props).filter(p=>!isNaN(parseFloat(p.lat)));
+  if(placed.length) map.fitBounds(placed.map(p=>[+p.lat,+p.lng]),{padding:[40,40],maxZoom:16});
+  setTimeout(()=>map.invalidateSize(),100);
+  $("scanFab").hidden=false;
+}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginBtn").disabled=true;$("loginNote").textContent="";
+  const {error}=await sb.auth.signInWithPassword({email:$("lEmail").value.trim(),password:$("lPass").value});
+  $("loginBtn").disabled=false; if(error){$("loginNote").textContent=error.message;return} boot();});
+$("signOut").onclick=async()=>{await sb.auth.signOut();location.reload()};
+boot();
+
+// ---------- phone: scan a gate sign ----------
+const STOP=new Set(["quinta","casa","casal","villa","vila","vivenda","monte","herdade","da","de","do","das","dos","e","a","o","the","azeitao","arrabida","setubal","al","lda","house","country","serra","mar"]);
+const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const toks=s=>norm(s).split(/[^a-z0-9]+/).filter(t=>t.length>2);
+function scoreRecord(p,ocrTokens,ocrNorm){
+  const nameT=toks(p.name), addrT=toks(p.address);
+  const ocr=new Set(ocrTokens); let s=0;
+  const sig=nameT.filter(t=>!STOP.has(t)); const gen=nameT.filter(t=>STOP.has(t));
+  for(const t of sig){ if(ocr.has(t)) s+=3; else if([...ocr].some(o=>o.length>3&&(o.includes(t)||t.includes(o)))) s+=1.5 }
+  for(const t of gen){ if(ocr.has(t)) s+=0.5 }
+  for(const t of addrT){ if(!STOP.has(t)&&ocr.has(t)) s+=1 }
+  const full=norm(p.name).replace(/[^a-z0-9]+/g," ").trim(); if(full&&full.length>5&&ocrNorm.includes(full)) s+=6;
+  return s;
+}
+let scanBlob=null, scanOcr="";
+function showCands(list,note){
+  const C=$("cands"); C.innerHTML="";
+  if(!list.length){C.innerHTML='<p class="muted small">'+(note||"No matching record. Search below or add a new one.")+'</p>';return}
+  for(const [p,sc] of list){const b=document.createElement("button");b.type="button";b.innerHTML="<b></b><span></span>";b.querySelector("b").textContent=title(p);b.querySelector("span").textContent=[p.address,p.al,sc!=null?("match "+Math.round(sc)):null,missing(p).pin?"no pin yet":(p.pinStatus==="confirmed"?"pin confirmed":"pin approximate")].filter(Boolean).join(" · ");b.onclick=()=>pickScan(p.id);C.appendChild(b)}
+}
+$("scanFab").onclick=()=>$("scanFile").click();
+$("scanFile").onchange=async()=>{
+  const f=$("scanFile").files[0]; $("scanFile").value=""; if(!f) return;
+  scanBlob=await shrink(f); scanOcr=""; $("ocrText").hidden=true; $("cands").innerHTML=""; $("scanQ").value="";
+  $("scanModal").hidden=false; $("scanState").textContent="Reading the sign…";
+  try{
+    const w=await Tesseract.recognize(scanBlob,"por+eng",{logger:m=>{if(m.status==="recognizing text")$("scanState").textContent="Reading the sign… "+Math.round(m.progress*100)+"%"}});
+    scanOcr=(w.data.text||"").trim();
+  }catch(e){scanOcr=""}
+  $("ocrText").textContent=scanOcr||"(no text found)"; $("ocrText").hidden=false;
+  const ocrT=toks(scanOcr), ocrN=norm(scanOcr).replace(/[^a-z0-9]+/g," ");
+  const ranked=Object.values(props).map(p=>[p,scoreRecord(p,ocrT,ocrN)]).filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $("scanState").textContent=ranked.length?"Which property is this? Tap one to pin it at your position.":"Could not match the sign to a record.";
+  showCands(ranked);
+};
+$("scanQ").oninput=()=>{const q=norm($("scanQ").value).trim();if(!q){return}const l=Object.values(props).filter(p=>norm(p.name+" "+p.address+" "+p.al).includes(q)).slice(0,8).map(p=>[p,null]);showCands(l,"Nothing matches that search.")};
+$("scanCancel").onclick=()=>{$("scanModal").hidden=true};
+$("scanNew").onclick=async()=>{
+  const guess=(scanOcr.split("\n").map(s=>s.trim()).filter(s=>s.length>3).sort((a,b)=>b.length-a.length)[0]||"").slice(0,60);
+  const id=createRecord({name:guess}); $("scanModal").hidden=true; await pickScan(id);
+};
+async function pickScan(id){
+  $("scanModal").hidden=true; const p=props[id]; if(!p) return;
+  let pos=null; try{pos=await here()}catch(e){toast("No GPS fix, pin not moved. "+e)}
+  const upd={...p,updated:Date.now(),log:[...(p.log||[])]};
+  if(pos){upd.lat=pos.lat.toFixed(6);upd.lng=pos.lng.toFixed(6);upd.pinStatus="confirmed";upd.log.push({date:today(),text:"Visited. Pin set from phone GPS (±"+Math.round(pos.acc)+" m)."})}
+  if(scanBlob){const ph=await uploadPhoto(id,scanBlob);if(ph){upd.photos=[...(p.photos||[]),ph];if(scanOcr)upd.log.push({date:today(),text:"Gate sign photo. Read: "+scanOcr.replace(/\s+/g," ").slice(0,120)})}}
+  props[id]=upd; await store(); open(id); if(pos){map.setView([pos.lat,pos.lng],18)} renderAll(); toast(pos?"Pinned at your position":"Saved");
+}
+const today=()=>new Date().toISOString().slice(0,10);
+function here(){return new Promise((res,rej)=>{if(!navigator.geolocation)return rej("no geolocation");navigator.geolocation.getCurrentPosition(g=>res({lat:g.coords.latitude,lng:g.coords.longitude,acc:g.coords.accuracy}),e=>rej(e.message),{enableHighAccuracy:true,timeout:15000,maximumAge:0})})}
+$("hereBtn").onclick=async()=>{if(!sel)return;try{const pos=await here();$("lat").value=pos.lat.toFixed(6);$("lng").value=pos.lng.toFixed(6);$("pinStatus").value="confirmed";setDirty(true);save();map.setView([pos.lat,pos.lng],18);toast("Pinned at your position (±"+Math.round(pos.acc)+" m)")}catch(e){toast("No GPS fix: "+e)}};
+
+// ---------- photos ----------
+async function shrink(file){
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(file)});
+  const max=1600, r=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement("canvas"); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height); return await new Promise(res=>c.toBlob(res,"image/jpeg",0.82));
+}
+async function uploadPhoto(id,blob){
+  const path=id+"/"+Date.now()+".jpg"; const {error}=await sb.storage.from("photos").upload(path,blob,{contentType:"image/jpeg"});
+  if(error){toast("Photo upload failed: "+error.message);return null} return {path,date:today(),by:me};
+}
+async function renderPhotos(p){
+  const P=$("photos"); P.innerHTML=""; const list=p.photos||[]; if(!list.length){P.innerHTML='<span class="muted small">No photos yet.</span>';return}
+  for(const ph of list){const a=document.createElement("a");a.target="_blank";a.rel="noopener";const i=document.createElement("img");i.alt=ph.date;a.appendChild(i);P.appendChild(a);
+    sb.storage.from("photos").createSignedUrl(ph.path,3600).then(({data})=>{if(data){i.src=data.signedUrl;a.href=data.signedUrl}})}
+}
+$("photoBtn").onclick=()=>$("photoFile").click();
+$("photoFile").onchange=async()=>{const f=$("photoFile").files[0];$("photoFile").value="";if(!f||!sel)return;toast("Uploading photo…");const ph=await uploadPhoto(sel,await shrink(f));if(ph){props[sel]={...props[sel],photos:[...(props[sel].photos||[]),ph]};await store();renderPhotos(props[sel])}};
+})();
+</script>
+</body>
+</html>
