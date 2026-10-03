@@ -52,7 +52,8 @@ aside.list{border-right:1px solid var(--line);background:var(--paper);display:fl
 .row{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:start;padding:10px 12px;border:0;border-bottom:1px solid var(--line);width:100%;text-align:left;background:none}
 .row:hover{background:var(--bg)}
 .row.sel{background:var(--soft)}
-.row .dot{width:10px;height:10px;border-radius:50%;margin-top:5px}
+.row .dot{width:10px;height:10px;border-radius:50%;margin-top:5px;box-sizing:content-box}
+.row .dot{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ring)}
 .row .addr{font-weight:600;overflow-wrap:anywhere}
 .row .meta{color:var(--muted);font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .row .ref{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;letter-spacing:.04em}
@@ -61,7 +62,7 @@ aside.list{border-right:1px solid var(--line);background:var(--paper);display:fl
 .mapwrap{position:relative;min-width:0;min-height:0}
 .mapwrap.adding .leaflet-container{cursor:crosshair}
 .hint{position:absolute;left:12px;bottom:12px;z-index:500;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--muted);max-width:360px}
-.legend{position:absolute;right:12px;bottom:12px;z-index:500;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted)}
+.legend{position:absolute;right:12px;bottom:12px;z-index:500;max-width:46vw;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
 .pinicon{background:none;border:0}
@@ -203,7 +204,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
   <aside class="list" id="list">
     <div class="tools">
       <input id="q" type="search" placeholder="Search address, owner, AL number" aria-label="Search">
-      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option><option value="_spotted">Not on the AL register</option></select>
+      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option><option value="_green">Green, ready to write</option><option value="_amber">Amber, partly found</option><option value="_red">Red, nothing yet</option><option value="_spotted">Not on the AL register</option></select>
     </div>
     <div class="rows" id="rows"></div>
   </aside>
@@ -335,6 +336,12 @@ function parseListing(url){
   return out;
 }
 const locked=p=>p&&p.pinStatus==="confirmed";
+const complete=p=>!!(p&&p.pinStatus==="confirmed"&&p.owner&&(p.phone||p.email||p.ownerAddr));
+// readiness: how many of location, owner name and contact we hold
+const readiness=p=>[p.pinStatus==="confirmed",!!p.owner,!!(p.phone||p.email||p.ownerAddr)].filter(Boolean).length;
+const light=p=>{const r=readiness(p);return r===3?"green":r===0?"red":"amber"};
+const LIGHT={green:"var(--s-bought)",amber:"var(--s-letter)",red:"var(--s-declined)"};
+const lightHex=p=>getComputedStyle(document.documentElement).getPropertyValue({green:"--s-bought",amber:"--s-letter",red:"--s-declined"}[light(p)]).trim();
 const missing=p=>({pin:isNaN(parseFloat(p.lat)),confirm:!isNaN(parseFloat(p.lat))&&p.pinStatus!=="confirmed",al:!p.al,owner:!p.owner,contact:!(p.phone||p.email||p.ownerAddr),address:!p.address});
 
 for(const [v,l,c] of STATUSES){
@@ -342,6 +349,7 @@ for(const [v,l,c] of STATUSES){
   const s=document.createElement("span"); s.innerHTML=`<i style="background:var(${c})"></i>${l}`; $("legend").appendChild(s);
 }
 {const s=document.createElement("span");s.innerHTML='<i style="border:2px dashed var(--muted);background:none"></i>Approximate pin';$("legend").appendChild(s)}
+for(const [c,l] of [["red","Nothing yet"],["amber","Partly found"],["green","Location, owner and contact"]]){const s=document.createElement("span");s.innerHTML=`<i style="background:var(--s-none);box-shadow:0 0 0 2px ${LIGHT[c]}"></i>${l}`;$("legend").appendChild(s)}
 const sVar=v=>(STATUSES.find(s=>s[0]===v)||STATUSES[0])[2];
 const sColor=v=>getComputedStyle(document.documentElement).getPropertyValue(sVar(v)).trim()||"#888";
 const sLabel=v=>(STATUSES.find(s=>s[0]===v)||STATUSES[0])[1];
@@ -411,7 +419,7 @@ const meCtl=L.control({position:"topleft"}); meCtl.onAdd=()=>{const d=L.DomUtil.
 const homeCtl=L.control({position:"topleft"}); homeCtl.onAdd=()=>{const d=L.DomUtil.create("div","leaflet-bar");d.innerHTML='<a href="#" title="Back to Picheleiros" style="font-size:15px;line-height:30px">⌂</a>';L.DomEvent.on(d,"click",e=>{L.DomEvent.stop(e);map.setView(HOME,HOME_ZOOM)});return d}; homeCtl.addTo(map);
 function icon(p){
   return L.divIcon({className:"pinicon"+(p.id===sel?" sel":""),iconSize:[22,30],iconAnchor:[11,30],popupAnchor:[0,-28],
-    html:p.pinStatus==="confirmed"?`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="${sColor(p.status)}" stroke="rgba(0,0,0,.35)"/><circle cx="11" cy="10.5" r="3.5" fill="#fff"/></svg>`:`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="rgba(255,255,255,.85)" stroke="${sColor(p.status)}" stroke-width="3" stroke-dasharray="3 2"/><circle cx="11" cy="10.5" r="3" fill="${sColor(p.status)}"/></svg>`});
+    html:p.pinStatus==="confirmed"?`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="${sColor(p.status)}" stroke="${lightHex(p)}" stroke-width="2.5"/><circle cx="11" cy="10.5" r="3.5" fill="${lightHex(p)}"/></svg>`:`<svg viewBox="0 0 22 30"><path d="M11 29C11 29 2 17 2 10.5A9 9 0 0 1 20 10.5C20 17 11 29 11 29Z" fill="rgba(255,255,255,.85)" stroke="${sColor(p.status)}" stroke-width="3" stroke-dasharray="3 2"/><circle cx="11" cy="10.5" r="3" fill="${lightHex(p)}"/></svg>`});
 }
 function renderPins(){
   for(const id in markers){if(!props[id]){map.removeLayer(markers[id]);delete markers[id]}}
@@ -470,13 +478,13 @@ $("geoBtn").onclick=async()=>{
 // ---------- list ----------
 function renderList(){
   const q=norm($("q").value.trim()), fs=$("fStatus").value;
-  const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:fs==="_spotted"?(p.source||"register")!=="register":m.contact};
+  const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:fs==="_spotted"?(p.source||"register")!=="register":fs==="_green"?light(p)==="green":fs==="_amber"?light(p)==="amber":fs==="_red"?light(p)==="red":m.contact};
   const items=Object.values(props).filter(p=>pass(p)&&(!q||norm([p.name,p.rnalName,p.address,p.owner,p.keyholder,p.al,p.notes].join(" ")).includes(q)))
     .sort((a,b)=>title(a).localeCompare(title(b)));
   const rows=$("rows"); rows.innerHTML="";
   if(!items.length){rows.innerHTML=`<div class="empty">${Object.keys(props).length?"Nothing matches that search.":"No properties yet. Click Add property, then click the house on the map."}</div>`}
   for(const p of items){
-    const b=document.createElement("button"); b.type="button"; b.className="row"+(p.id===sel?" sel":"");
+    const b=document.createElement("button"); b.type="button"; b.className="row"+(p.id===sel?" sel":""); b.style.setProperty("--ring",LIGHT[light(p)]);
     b.innerHTML=`<span class="dot" style="background:var(${sVar(p.status)})"></span><span><div class="addr"></div><div class="meta"></div></span><span class="ref"></span>`;
     const m=missing(p);
     b.querySelector(".addr").textContent=title(p);
@@ -485,7 +493,8 @@ function renderList(){
     b.onclick=()=>{open(p.id);const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(!isNaN(lat))map.panTo([lat,lng])}; rows.appendChild(b);
   }
   const c={}; for(const p of Object.values(props)) c[p.status||"none"]=(c[p.status||"none"]||0)+1;
-  $("counts").innerHTML=`<span><b>${Object.keys(props).length}</b> properties</span>`+STATUSES.filter(s=>c[s[0]]).map(s=>`<span><b>${c[s[0]]}</b> ${s[1].toLowerCase()}</span>`).join("");
+  const nc=Object.values(props).filter(p=>light(p)==="green").length, na=Object.values(props).filter(p=>light(p)==="amber").length;
+  $("counts").innerHTML=`<span><b>${Object.keys(props).length}</b> properties</span><span><b>${nc}</b> green</span><span><b>${na}</b> amber</span>`+STATUSES.filter(s=>c[s[0]]).map(s=>`<span><b>${c[s[0]]}</b> ${s[1].toLowerCase()}</span>`).join("");
 }
 function renderAll(){renderList();renderPins()}
 
@@ -517,7 +526,7 @@ function renderTodo(p){
     m.owner&&(p.source||"register")==="register"&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");$("owner").focus();toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
     m.contact&&!m.owner&&["Add contact details","",()=>$("phone").focus()],
   ].filter(Boolean);
-  if(!items.length){T.innerHTML='<span class="done">Record complete'+(locked(p)?", pin locked":"")+'</span>';return}
+  if(!items.length){T.innerHTML='<span class="done">'+(complete(p)?"Green, ready to write":"Record complete")+(locked(p)?", pin locked":"")+'</span>';return}
   if(locked(p)){const sp=document.createElement("span");sp.className="done";sp.textContent="Pin locked";T.appendChild(sp)}
   for(const [l,c,fn] of items){const b=document.createElement("button");b.type="button";b.className=c;b.textContent=l;b.onclick=fn;T.appendChild(b)}
 }
