@@ -363,6 +363,12 @@ function subscribe(){
     lastSaved[r.id]=s; if(dirty&&sel===r.id){toast("This record was changed elsewhere, your edits will overwrite it");return}
     props[r.id]=v; if(sel===r.id){open(r.id)} renderAll();
   }).subscribe();
+  // fallback when the live channel cannot connect: refresh on focus and every 90 s
+  const refresh=async()=>{if(dirty)return;const {data}=await sb.from("properties").select("id,data");if(!data)return;
+    const next={};for(const r of data){next[r.id]={...r.data,id:r.id};lastSaved[r.id]=JSON.stringify(next[r.id])}
+    if(JSON.stringify(Object.keys(next).sort())!==JSON.stringify(Object.keys(props).sort())||Object.values(next).some(v=>JSON.stringify(v)!==JSON.stringify(props[v.id]))){props=next;if(sel&&props[sel])open(sel);else if(sel)close();renderAll()}};
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refresh()});
+  setInterval(refresh,90000);
 }
 
 // ---------- map ----------
