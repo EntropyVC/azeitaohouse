@@ -68,6 +68,7 @@ aside.list{border-right:1px solid var(--line);background:var(--paper);display:fl
 .pinicon svg{width:22px;height:30px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
 .pinicon.sel svg{transform:scale(1.3);transform-origin:bottom center}
 .leaflet-container{font:inherit}
+.leaflet-bar a.on{background:var(--accent);color:var(--accent-ink)}
 .leaflet-popup-content{font:13px var(--body);margin:10px 12px}
 .drawer{position:absolute;top:0;right:0;bottom:0;width:420px;max-width:100%;background:var(--paper);border-left:1px solid var(--line);display:flex;flex-direction:column;z-index:1100;box-shadow:-6px 0 20px rgba(0,0,0,.1)}
 .drawer[hidden]{display:none}
@@ -331,6 +332,7 @@ function parseListing(url){
   }catch(e){}
   return out;
 }
+const locked=p=>p&&p.pinStatus==="confirmed";
 const missing=p=>({pin:isNaN(parseFloat(p.lat)),confirm:!isNaN(parseFloat(p.lat))&&p.pinStatus!=="confirmed",al:!p.al,owner:!p.owner,contact:!(p.phone||p.email||p.ownerAddr),address:!p.address});
 
 for(const [v,l,c] of STATUSES){
@@ -386,6 +388,24 @@ const roads=L.tileLayer(esri("Reference/World_Transportation"),{maxZoom:19,pane:
 const places=L.tileLayer(esri("Reference/World_Boundaries_and_Places"),{maxZoom:19,pane:"overlayPane"}).addTo(map);
 L.control.layers({"Satellite":sat,"Streets":streets,"Topographic":topo},{"Road names":roads,"Place names":places},{position:"topright"}).addTo(map);
 map.on("baselayerchange",e=>{const onSat=e.name==="Satellite";[roads,places].forEach(l=>{if(onSat){if(!map.hasLayer(l))l.addTo(map)}else if(map.hasLayer(l))map.removeLayer(l)})});
+// live position
+let watchId=null, meDot=null, meRing=null, follow=false, meBtn=null;
+function stopWatch(){if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}follow=false;if(meBtn)meBtn.classList.remove("on");if(meDot){map.removeLayer(meDot);meDot=null}if(meRing){map.removeLayer(meRing);meRing=null}}
+function startWatch(){
+  if(!navigator.geolocation){toast("No GPS on this device");return}
+  follow=true; meBtn.classList.add("on"); let first=true;
+  watchId=navigator.geolocation.watchPosition(g=>{
+    const ll=[g.coords.latitude,g.coords.longitude], acc=g.coords.accuracy;
+    if(!meDot){meRing=L.circle(ll,{radius:acc,color:"#1D5C8C",weight:1,fillColor:"#1D5C8C",fillOpacity:.12,interactive:false}).addTo(map);
+      meDot=L.circleMarker(ll,{radius:8,color:"#fff",weight:3,fillColor:"#1D5C8C",fillOpacity:1}).addTo(map);meDot.bindTooltip("You",{direction:"top",offset:[0,-8]})}
+    else{meDot.setLatLng(ll);meRing.setLatLng(ll);meRing.setRadius(acc)}
+    if(first){map.setView(ll,Math.max(map.getZoom(),17));first=false} else if(follow) map.panTo(ll,{animate:true});
+    $("hint").hidden=false; $("hint").textContent="Following you, ±"+Math.round(acc)+" m. Drag the map to stop following, tap the dot button again to stop.";
+  },e=>{toast("GPS error: "+e.message);stopWatch();$("hint").hidden=true},{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
+}
+map.on("dragstart",()=>{if(follow){follow=false;$("hint").textContent="GPS on, not following. Tap the dot button to re-centre."}});
+const meCtl=L.control({position:"topleft"}); meCtl.onAdd=()=>{const d=L.DomUtil.create("div","leaflet-bar");d.innerHTML='<a href="#" id="meBtn" title="My location" style="font-size:16px;line-height:30px">◎</a>';meBtn=d.firstChild;
+  L.DomEvent.on(d,"click",e=>{L.DomEvent.stop(e);if(watchId!=null&&follow){stopWatch();$("hint").hidden=true}else if(watchId!=null){follow=true;meBtn.classList.add("on");if(meDot)map.panTo(meDot.getLatLng())}else startWatch()});return d}; meCtl.addTo(map);
 const homeCtl=L.control({position:"topleft"}); homeCtl.onAdd=()=>{const d=L.DomUtil.create("div","leaflet-bar");d.innerHTML='<a href="#" title="Back to Picheleiros" style="font-size:15px;line-height:30px">⌂</a>';L.DomEvent.on(d,"click",e=>{L.DomEvent.stop(e);map.setView(HOME,HOME_ZOOM)});return d}; homeCtl.addTo(map);
 function icon(p){
   return L.divIcon({className:"pinicon"+(p.id===sel?" sel":""),iconSize:[22,30],iconAnchor:[11,30],popupAnchor:[0,-28],
@@ -397,10 +417,10 @@ function renderPins(){
     const lat=parseFloat(p.lat),lng=parseFloat(p.lng);
     if(isNaN(lat)||isNaN(lng)){if(markers[p.id]){map.removeLayer(markers[p.id]);delete markers[p.id]}continue}
     let m=markers[p.id];
-    if(!m){m=L.marker([lat,lng],{icon:icon(p),draggable:true});m.on("click",()=>{if(!placing)open(p.id)});
+    if(!m){m=L.marker([lat,lng],{icon:icon(p),draggable:!locked(p)});m.on("click",()=>{if(!placing)open(p.id)});
       m.on("dragend",e=>{const ll=e.target.getLatLng();props[p.id]={...props[p.id],lat:ll.lat.toFixed(6),lng:ll.lng.toFixed(6),pinStatus:"confirmed"};store();renderPins();if(sel===p.id){$("lat").value=props[p.id].lat;$("lng").value=props[p.id].lng;$("pinStatus").value="confirmed";renderTodo(props[p.id])}});
       m.addTo(map);markers[p.id]=m}
-    else{m.setLatLng([lat,lng]);m.setIcon(icon(p))}
+    else{m.setLatLng([lat,lng]);m.setIcon(icon(p));if(m.dragging){locked(p)?m.dragging.disable():m.dragging.enable()}}
     m.bindTooltip(title(p),{direction:"right",offset:[10,-14]});
   }
   const unplaced=Object.values(props).filter(p=>isNaN(parseFloat(p.lat))).length;
@@ -437,6 +457,7 @@ async function reverseGeocode(id,lat,lng){
 }
 $("geoBtn").onclick=async()=>{
   const q=$("address").value.trim(); if(!q) return;
+  if(locked(props[sel])){toast("Pin is confirmed and locked. Set pin status to approximate to move it.");return}
   $("geoBtn").disabled=true;
   try{const g=await geocode(/azeit|setúbal|setubal|portugal/i.test(q)?q:q+", Azeitão, Setúbal, Portugal");
     if(g){$("lat").value=g.lat;$("lng").value=g.lng;$("pinStatus").value="approximate";setDirty(true);map.setView([g.lat,g.lng],17);toast("Found. Drag the pin if it is slightly off.")}else toast("Address not found. Place the pin by hand.")}
@@ -473,7 +494,7 @@ function open(id){
   placing=false; adding=false; $("locateBtn").classList.remove("on");
   for(const f of FIELDS){$(f).value=p[f]??(f==="status"?"none":"")}
   $("dTitle").textContent=title(p);
-  $("locateBtn").textContent=missing(p).pin?"Place pin":"Move pin";
+  $("locateBtn").textContent=missing(p).pin?"Place pin":locked(p)?"Pin locked":"Move pin";
   renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); setDirty(false);
   $("drawer").hidden=false; if(window.innerWidth<=760) $("list").hidden=true;
   renderAll(); setTimeout(()=>map.invalidateSize(),50);
@@ -493,7 +514,8 @@ function renderTodo(p){
     m.owner&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");$("owner").focus();toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
     m.contact&&!m.owner&&["Add contact details","",()=>$("phone").focus()],
   ].filter(Boolean);
-  if(!items.length){T.innerHTML='<span class="done">Record complete</span>';return}
+  if(!items.length){T.innerHTML='<span class="done">Record complete'+(locked(p)?", pin locked":"")+'</span>';return}
+  if(locked(p)){const sp=document.createElement("span");sp.className="done";sp.textContent="Pin locked";T.appendChild(sp)}
   for(const [l,c,fn] of items){const b=document.createElement("button");b.type="button";b.className=c;b.textContent=l;b.onclick=fn;T.appendChild(b)}
 }
 $("form").addEventListener("submit",e=>{e.preventDefault();save()});
@@ -528,7 +550,7 @@ $("closeBtn").onclick=close;
 $("delBtn").onclick=()=>{$("delConfirm").hidden=false;$("delBtn").hidden=true};
 $("delNo").onclick=()=>{$("delConfirm").hidden=true;$("delBtn").hidden=false};
 $("delYes").onclick=()=>{const id=sel;$("delConfirm").hidden=true;$("delBtn").hidden=false;delete props[id];dirty=false;sel=null;$("drawer").hidden=true;store();renderAll();toast("Deleted")};
-$("locateBtn").onclick=()=>{placing=!placing;$("locateBtn").classList.toggle("on",placing);renderPins()};
+$("locateBtn").onclick=()=>{if(locked(props[sel])){toast("Pin is confirmed and locked. Set pin status to approximate to move it.");return}placing=!placing;$("locateBtn").classList.toggle("on",placing);renderPins()};
 // ---------- add flow ----------
 $("addBtn").onclick=()=>{
   if(adding){adding=false;pendingAdd=null;$("addBtn").classList.remove("on");renderPins();return}
@@ -587,7 +609,7 @@ $("lookupBtn").onclick=async()=>{
 $("importBtn").onclick=()=>$("importFile").click();
 $("importFile").onchange=()=>{
   const f=$("importFile").files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){props[k]={...(props[k]||{}),...inc[k],id:k};n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`)}catch(e){toast("That file could not be read")}};
+  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;let kept=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){const old=props[k]||{};const nv={...old,...inc[k],id:k};if(locked(old)){nv.lat=old.lat;nv.lng=old.lng;nv.pinStatus=old.pinStatus;kept++}props[k]=nv;n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`+(kept?`, ${kept} confirmed pin${kept===1?"":"s"} kept`:""))}catch(e){toast("That file could not be read")}};
   r.readAsText(f); $("importFile").value="";
 };
 window.addEventListener("beforeunload",()=>{if(dirty)save()});
@@ -649,15 +671,15 @@ $("scanNew").onclick=async()=>{
 };
 async function pickScan(id){
   $("scanModal").hidden=true; const p=props[id]; if(!p) return;
-  let pos=null; try{pos=await here()}catch(e){toast("No GPS fix, pin not moved. "+e)}
+  let pos=null; if(locked(p)){toast("Pin is locked, photo added without moving it")} else {try{pos=await here()}catch(e){toast("No GPS fix, pin not moved. "+e)}}
   const upd={...p,updated:Date.now(),log:[...(p.log||[])]};
   if(pos){upd.lat=pos.lat.toFixed(6);upd.lng=pos.lng.toFixed(6);upd.pinStatus="confirmed";upd.log.push({date:today(),text:"Visited. Pin set from phone GPS (±"+Math.round(pos.acc)+" m)."})}
   if(scanBlob){const ph=await uploadPhoto(id,scanBlob);if(ph){upd.photos=[...(p.photos||[]),ph];if(scanOcr)upd.log.push({date:today(),text:"Gate sign photo. Read: "+scanOcr.replace(/\s+/g," ").slice(0,120)})}}
   props[id]=upd; await store(); open(id); if(pos){map.setView([pos.lat,pos.lng],18)} renderAll(); toast(pos?"Pinned at your position":"Saved");
 }
 const today=()=>new Date().toISOString().slice(0,10);
-function here(){return new Promise((res,rej)=>{if(!navigator.geolocation)return rej("no geolocation");navigator.geolocation.getCurrentPosition(g=>res({lat:g.coords.latitude,lng:g.coords.longitude,acc:g.coords.accuracy}),e=>rej(e.message),{enableHighAccuracy:true,timeout:15000,maximumAge:0})})}
-$("hereBtn").onclick=async()=>{if(!sel)return;try{const pos=await here();$("lat").value=pos.lat.toFixed(6);$("lng").value=pos.lng.toFixed(6);$("pinStatus").value="confirmed";setDirty(true);save();map.setView([pos.lat,pos.lng],18);toast("Pinned at your position (±"+Math.round(pos.acc)+" m)")}catch(e){toast("No GPS fix: "+e)}};
+function here(){return new Promise((res,rej)=>{if(meDot&&meRing){const l=meDot.getLatLng();return res({lat:l.lat,lng:l.lng,acc:meRing.getRadius()})}if(!navigator.geolocation)return rej("no geolocation");navigator.geolocation.getCurrentPosition(g=>res({lat:g.coords.latitude,lng:g.coords.longitude,acc:g.coords.accuracy}),e=>rej(e.message),{enableHighAccuracy:true,timeout:15000,maximumAge:0})})}
+$("hereBtn").onclick=async()=>{if(!sel)return;if(locked(props[sel])){toast("Pin is confirmed and locked. Set pin status to approximate to move it.");return}try{const pos=await here();$("lat").value=pos.lat.toFixed(6);$("lng").value=pos.lng.toFixed(6);$("pinStatus").value="confirmed";setDirty(true);save();map.setView([pos.lat,pos.lng],18);toast("Pinned at your position (±"+Math.round(pos.acc)+" m)")}catch(e){toast("No GPS fix: "+e)}};
 
 // ---------- photos ----------
 async function shrink(file){
