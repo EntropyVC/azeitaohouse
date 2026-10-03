@@ -188,6 +188,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
     <div class="f"><label for="nLink">Airbnb, Booking or other listing link</label><input id="nLink" placeholder="https://www.airbnb.com/rooms/..."></div>
     <div class="f"><label for="nAddr">Address or place</label><input id="nAddr" placeholder="Rua ..., Vila Nogueira de Azeitão, or a landmark"></div>
     <div class="f"><label for="nAL">AL registration number, if known</label><input id="nAL" placeholder="12345/AL"></div>
+    <div class="f"><label for="nSource">How did you find it</label><select id="nSource"><option value="register">AL register or listing</option><option value="spotted">Spotted in person, not a rental</option><option value="agent">Agent or local tip</option></select></div>
     <div class="actions">
       <button type="button" class="btn" id="nCancel">Cancel</button>
       <span class="spacer"></span>
@@ -202,7 +203,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
   <aside class="list" id="list">
     <div class="tools">
       <input id="q" type="search" placeholder="Search address, owner, AL number" aria-label="Search">
-      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option></select>
+      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option><option value="_spotted">Not on the AL register</option></select>
     </div>
     <div class="rows" id="rows"></div>
   </aside>
@@ -231,6 +232,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
           <div class="f"><label for="address">Address</label><input id="address" name="address" placeholder="Rua ..., Vila Nogueira de Azeitão"></div>
           <button type="button" class="btn" id="geoBtn" title="Find this address on the map">Locate</button>
         </div>
+        <div class="f"><label for="source">How we found it</label><select id="source" name="source"><option value="register">AL register or listing</option><option value="spotted">Spotted in person, not a rental</option><option value="agent">Agent or local tip</option><option value="other">Other</option></select></div>
         <div class="g2">
           <div class="f"><label for="al">AL registration (RNAL)</label><input id="al" name="al" placeholder="12345/AL"></div>
           <div class="f"><label for="type">Type</label><select id="type" name="type"><option>Moradia</option><option>Apartamento</option><option>Quinta</option><option>Terreno</option><option>Other</option></select></div>
@@ -310,14 +312,14 @@ const SB_URL="https://onmuenuokmiwmonfdozh.supabase.co", SB_KEY="sb_publishable_
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let me=null;
 const STATUSES=[["none","Not contacted","--s-none"],["letter","Letter sent","--s-letter"],["talks","In talks","--s-talks"],["offer","Offer made","--s-offer"],["declined","Declined","--s-declined"],["bought","Bought","--s-bought"]];
-const FIELDS=["name","rnalName","address","pinStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
+const FIELDS=["name","rnalName","source","address","pinStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
 const $=id=>document.getElementById(id);
 const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let props={}, sel=null, placing=false, adding=false, dirty=false, markers={}, pendingAdd=null;
 
 function createRecord(init){
   const id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  props[id]={id,name:"",address:"",al:"",listing:"",status:"none",type:"Moradia",ownerIs:"Unknown",log:[],created:Date.now(),updated:Date.now(),...init};
+  props[id]={id,name:"",address:"",al:"",listing:"",source:"register",status:"none",type:"Moradia",ownerIs:"Unknown",log:[],created:Date.now(),updated:Date.now(),...init};
   return id;
 }
 // Pull what a listing link tells us without fetching it
@@ -468,7 +470,7 @@ $("geoBtn").onclick=async()=>{
 // ---------- list ----------
 function renderList(){
   const q=norm($("q").value.trim()), fs=$("fStatus").value;
-  const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:m.contact};
+  const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:fs==="_spotted"?(p.source||"register")!=="register":m.contact};
   const items=Object.values(props).filter(p=>pass(p)&&(!q||norm([p.name,p.rnalName,p.address,p.owner,p.keyholder,p.al,p.notes].join(" ")).includes(q)))
     .sort((a,b)=>title(a).localeCompare(title(b)));
   const rows=$("rows"); rows.innerHTML="";
@@ -479,7 +481,7 @@ function renderList(){
     const m=missing(p);
     b.querySelector(".addr").textContent=title(p);
     b.querySelector(".meta").textContent=[p.rnalName&&norm(p.rnalName)!==norm(p.name)?"AL: "+p.rnalName:null,(p.address||"").split(",")[0]||null,p.owner||(p.keyholder?"Held by "+p.keyholder.split(" (")[0]:"Owner unknown"),sLabel(p.status)].filter(Boolean).join(" · ");
-    b.querySelector(".ref").textContent=m.pin?"no pin":m.confirm?"pin approx.":(p.al||"");
+    b.querySelector(".ref").textContent=m.pin?"no pin":m.confirm?"pin approx.":(p.al||((p.source||"register")!=="register"?"no AL":""));
     b.onclick=()=>{open(p.id);const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(!isNaN(lat))map.panTo([lat,lng])}; rows.appendChild(b);
   }
   const c={}; for(const p of Object.values(props)) c[p.status||"none"]=(c[p.status||"none"]||0)+1;
@@ -510,8 +512,9 @@ function renderTodo(p){
     m.pin&&["Place on map","warn",()=>{placing=true;$("locateBtn").classList.add("on");renderPins();toast("Click the house on the map")}],
     m.confirm&&["Confirm pin on satellite","warn",()=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);map.setView([lat,lng],17);sat.addTo(map);toast("Drag the pin onto the house. Dragging marks it confirmed.")}],
     m.address&&!m.pin&&["Add address","",()=>$("address").focus()],
-    m.al&&["Find AL number",p.listing?"warn":"",()=>{if(p.listing)window.open(p.listing,"_blank");$("al").focus();toast(p.listing?"The AL number is in the listing's details or house rules. Paste it here.":"Search the RNAL register by address, then paste the number.")}],
-    m.owner&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");$("owner").focus();toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
+    m.al&&(p.source||"register")==="register"&&["Find AL number",p.listing?"warn":"",()=>{if(p.listing)window.open(p.listing,"_blank");$("al").focus();toast(p.listing?"The AL number is in the listing's details or house rules. Paste it here.":"Search the RNAL register by address, then paste the number.")}],
+    m.owner&&(p.source||"register")!=="register"&&["Find owner via land registry","",()=>{$("descricao").focus();toast("No AL entry to look up. Ask a solicitador for the certidão predial from the address, or ask neighbours.")}],
+    m.owner&&(p.source||"register")==="register"&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");$("owner").focus();toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
     m.contact&&!m.owner&&["Add contact details","",()=>$("phone").focus()],
   ].filter(Boolean);
   if(!items.length){T.innerHTML='<span class="done">Record complete'+(locked(p)?", pin locked":"")+'</span>';return}
@@ -561,7 +564,7 @@ $("nCancel").onclick=()=>{$("addModal").hidden=true};
 $("addModal").addEventListener("click",e=>{if(e.target===$("addModal"))$("addModal").hidden=true});
 $("nLink").addEventListener("change",()=>{const v=$("nLink").value.trim();if(!v)return;const info=parseListing(v);if(info.nameHint&&!$("nName").value)$("nName").value=info.nameHint;$("nNote").textContent=info.site?`${info.site} link recognised.`:""});
 function gatherNew(){
-  const init={name:$("nName").value.trim(),address:$("nAddr").value.trim(),al:$("nAL").value.trim()};
+  const init={name:$("nName").value.trim(),address:$("nAddr").value.trim(),al:$("nAL").value.trim(),source:$("nSource").value};
   const link=$("nLink").value.trim(); if(link){const info=parseListing(link);init.listing=info.listing;if(info.listingId)init.listingId=info.listingId;if(info.site)init.site=info.site}
   return init;
 }
@@ -667,7 +670,7 @@ $("scanQ").oninput=()=>{const q=norm($("scanQ").value).trim();if(!q){return}cons
 $("scanCancel").onclick=()=>{$("scanModal").hidden=true};
 $("scanNew").onclick=async()=>{
   const guess=(scanOcr.split("\n").map(s=>s.trim()).filter(s=>s.length>3).sort((a,b)=>b.length-a.length)[0]||"").slice(0,60);
-  const id=createRecord({name:guess}); $("scanModal").hidden=true; await pickScan(id);
+  const id=createRecord({name:guess,source:"spotted"}); $("scanModal").hidden=true; await pickScan(id);
 };
 async function pickScan(id){
   $("scanModal").hidden=true; const p=props[id]; if(!p) return;
