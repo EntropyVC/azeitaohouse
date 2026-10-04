@@ -425,7 +425,7 @@ async function openParcel(fp,latlng){
   if(!d){popup.setContent('<div class="who">Plot '+(fp.label||nic)+'<br>Details unavailable.</div>');return}
   cadSel=d;
   const pred="https://www.predialonline.pt/PredialOnline/";
-  const html='<div style="font:13px var(--body);min-width:220px"><b>Plot '+d.label+'</b><br>Section '+d.section+', parcel '+d.parcel+' · '+fmtArea(d.area||0)+'<br><span class="who">'+(d.parish||"")+'</span>'+
+  const html='<div style="font:13px var(--body);min-width:220px"><b>Plot '+d.label+'</b><br>'+(d.section?'Section '+d.section+', parcel '+d.parcel:'No matriz reference in this cadastre source')+' · '+fmtArea(d.area||0)+'<br><span class="who">'+(d.parish||"")+'</span>'+
     '<div class="actions" style="margin-top:8px">'+(sel?'<button type="button" class="btn primary" id="cadAttach">Attach to '+title(props[sel]).replace(/</g,"&lt;").slice(0,28)+'</button>':'')+
     '<button type="button" class="btn" id="cadNew">New property here</button><a class="btn" style="text-decoration:none" target="_blank" rel="noopener" href="'+pred+'">Predial Online</a></div></div>';
   popup.setContent(html);
@@ -434,7 +434,7 @@ async function openParcel(fp,latlng){
 async function attachParcel(id,d){
   if(!id||!props[id]) return; const p=props[id];
   const c=d.ring&&d.ring.length>2?d.ring.reduce((a,q)=>[a[0]+q[0]/d.ring.length,a[1]+q[1]/d.ring.length],[0,0]):null;
-  const upd={...p,cadNic:d.label,cadSection:d.section,cadParcel:d.parcel,cadArea:d.area,updated:Date.now(),log:[...(p.log||[]),{date:today(),text:"Cadastre plot "+d.label+" attached, section "+d.section+" parcel "+d.parcel+", "+fmtArea(d.area||0)+"."}]};
+  const upd={...p,cadNic:d.label,cadSection:d.section,cadParcel:d.parcel,cadArea:d.area,updated:Date.now(),log:[...(p.log||[]),{date:today(),text:"Cadastre plot "+d.label+" attached"+(d.section?", section "+d.section+" parcel "+d.parcel:"")+", "+fmtArea(d.area||0)+"."}]};
   if(d.ring&&d.ring.length>2){upd.boundary=d.ring;upd.boundaryStatus="cadastre";upd.plotArea=d.area}
   if(c&&missing(p).pin){upd.lat=c[0].toFixed(6);upd.lng=c[1].toFixed(6);upd.pinStatus="approximate"}
   props[id]=upd; await store(); renderAll(); if(sel===id) open(id); toast("Plot attached");
