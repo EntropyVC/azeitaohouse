@@ -57,7 +57,7 @@ aside.list{border-right:1px solid var(--line);background:var(--paper);display:fl
 .row .dot{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ring)}
 .row .addr{font-weight:600;overflow-wrap:anywhere}
 .row .meta{color:var(--muted);font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.row .ref{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.row .ref{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;letter-spacing:.04em;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .empty{padding:28px 16px;color:var(--muted);font-size:13px}
 #map{position:absolute;inset:0;background:var(--bg)}
 .mapwrap{position:relative;min-width:0;min-height:0}
@@ -126,6 +126,8 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
 .login h1{font:600 22px/1.1 var(--display);margin:0}
 .scanfab{position:fixed;right:16px;}
 @media (min-width:761px){body.drawer-open .scanfab{right:440px}}
+@media (max-width:760px){body.drawer-open .scanfab{bottom:calc(72px + env(safe-area-inset-bottom,0px))}.legend{display:none}.legend.show{display:flex}.keybtn{position:absolute;right:12px;bottom:12px;z-index:500}}
+@media (min-width:761px){.keybtn{display:none}}
 .scanfab{bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:1150;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.2)}
 .cands{display:flex;flex-direction:column;gap:6px}
 .cands button{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:9px 12px}
@@ -139,6 +141,43 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
 @media (max-width:760px){header .sub{display:none}header{gap:8px;padding:8px 12px}.counts{display:none}header h1{font-size:17px}input,select,textarea{font-size:16px}.rows{padding-bottom:80px}.drawer form{padding-bottom:90px}}
 .cert{border-top:1px dashed var(--line);margin-top:8px;padding-top:8px}.certinfo{font-size:12.5px;color:var(--muted);line-height:1.5;margin:4px 0}.certinfo b{color:var(--ink)}.certbtns{display:flex;gap:6px;flex-wrap:wrap}
 input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity:1}
+
+/* record card */
+.sum{padding:12px 16px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.sumtop{display:flex;gap:10px;align-items:flex-start}
+.slight{width:14px;height:14px;border-radius:50%;flex:none;margin-top:3px;background:var(--s-none);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ring)}
+.sumtext{font-size:14px;line-height:1.45}
+.sumtext b{font-weight:600}
+.meter{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.meter span{display:flex;flex-direction:column;gap:4px;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-align:center}
+.meter i{display:block;height:8px;border-radius:3px;background:var(--line)}
+.meter .ok i{background:var(--s-bought)}
+.meter .ok{color:var(--ink)}
+.sumrow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.stars{display:flex;gap:2px}
+.stars button{border:0;background:none;font-size:22px;line-height:1;padding:0 2px;color:var(--line);cursor:pointer}
+.stars button.on{color:#d79a1e}
+.sumval{font-size:13px;color:var(--muted);text-align:right}
+.sumval b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.sumval button{border:0;background:none;color:var(--accent);font-size:12px;padding:0;cursor:pointer;text-decoration:underline}
+.primact{width:100%;padding:11px 14px;font-size:15px;font-weight:600}
+.sec{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.sec summary{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 0;font-weight:600;cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+.sec summary::-webkit-details-marker{display:none}
+.sec summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+.sec[open] summary::before{transform:rotate(45deg)}
+.sec:not([open]) summary{border-bottom:1px solid var(--line)}
+/* list tabs and mini meter */
+.tabs{display:flex;gap:4px;align-items:center}
+.tab{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 12px;font-size:12px;color:var(--muted)}
+.tab.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tabnote{margin-left:auto;font-size:11px;color:var(--muted)}
+.row .mini{display:inline-grid;grid-template-columns:repeat(7,8px);gap:2px;margin-top:5px}
+.row .mini i{display:block;height:5px;border-radius:2px;background:var(--line)}
+.row .mini i.ok{background:var(--s-bought)}
+.row .score{font-size:12px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 6px;display:inline-block;margin-bottom:3px}
+.row .why{color:var(--muted);font-size:11.5px;margin-top:2px}
+@media (max-width:760px){.sumrow{flex-direction:column;align-items:flex-start;gap:6px}.sumval{text-align:left}.sumtext{font-size:15px}.row .addr{font-size:15px}.row .meta{font-size:13px}}
 </style>
 </head>
 <body>
@@ -224,6 +263,7 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
 <main>
   <aside class="list" id="list">
     <div class="tools">
+      <div class="tabs" role="tablist"><button type="button" class="tab on" id="tabFocus" data-tab="focus">Focus</button><button type="button" class="tab" id="tabAll" data-tab="all">All</button><span class="tabnote" id="tabNote"></span></div>
       <input id="q" type="search" placeholder="Search address, owner, AL number" aria-label="Search">
       <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option><option value="_green">Green, ready to write</option><option value="_amber">Amber, partly found</option><option value="_red">Red, nothing yet</option><option value="_spotted">Not on the AL register</option></select>
     </div>
@@ -234,6 +274,7 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
     <div id="map"></div>
     <div class="hint" id="hint" hidden></div>
     <div class="legend" id="legend"></div>
+    <button type="button" class="btn keybtn" id="keyBtn">Key</button>
   </section>
 
   <div class="drawer" id="drawer" hidden>
@@ -243,10 +284,16 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
       <button class="btn" id="locateBtn" title="Click on the map to move the pin">Move pin</button>
       <button class="btn" id="closeBtn">Close</button>
     </div>
+    <div class="sum" id="sum">
+      <div class="sumtop"><span class="slight" id="sumLight"></span><div class="sumtext" id="sumText"></div></div>
+      <div class="meter" id="meter"></div>
+      <div class="sumrow"><div class="stars" id="stars" title="Your own rating from what you have seen"></div><div class="sumval" id="sumVal"></div></div>
+      <button type="button" class="btn primary primact" id="primaryAct"></button>
+    </div>
     <div class="todo" id="todo"></div>
     <form id="form">
-      <fieldset>
-        <legend>Property</legend>
+      <details class="sec">
+        <summary>Property</summary>
         <div class="g2">
           <div class="f"><label for="name">Listing or villa name</label><input id="name" name="name" placeholder="As it appears on the listing"></div>
           <div class="f"><label for="rnalName">Name in the AL register</label><input id="rnalName" name="rnalName" placeholder="Nome do Alojamento"></div>
@@ -272,10 +319,10 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
         <div class="f"><label>Plot boundary</label><div class="actions" style="margin-top:0"><button type="button" class="btn" id="drawBtn">Draw boundary</button><button type="button" class="btn" id="finishBtn" hidden>Finish</button><button type="button" class="btn" id="clearBoundaryBtn" hidden>Clear</button><span class="muted small" id="boundaryInfo"></span></div></div>
         <div class="f"><label for="listing">Listing link (Airbnb / Booking)</label><input id="listing" name="listing" type="url" placeholder="https://"></div>
         <div class="links" id="links"></div>
-      </fieldset>
+      </details>
 
-      <fieldset>
-        <legend>Registry</legend>
+      <details class="sec">
+        <summary>Registry</summary>
         <div class="g2">
           <div class="f"><label for="cadSection">Cadastre section</label><input id="cadSection" name="cadSection" placeholder="Letter, from the plot"></div>
           <div class="f"><label for="cadParcel">Cadastre parcel (artigo rústico)</label><input id="cadParcel" name="cadParcel" placeholder="Number, from the plot"></div>
@@ -298,13 +345,18 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
         </div>
         <div class="f"><label for="charges">Mortgage / charges</label><input id="charges" name="charges" placeholder="Bank and year, from the certidão"></div>
         <div class="g2">
-          <div class="f"><label for="estValue">Estimated value €</label><input id="estValue" name="estValue" type="number" min="0"></div>
-          <div class="f"><label for="offer">Our offer €</label><input id="offer" name="offer" type="number" min="0"></div>
+          <div class="f"><label for="estValue">Valuation low €</label><input id="estValue" name="estValue" type="number" min="0" step="1000"></div>
+          <div class="f"><label for="estHigh">Valuation high €</label><input id="estHigh" name="estHigh" type="number" min="0" step="1000"></div>
         </div>
-      </fieldset>
+        <div class="g2">
+          <div class="f"><label for="offer">Our offer €</label><input id="offer" name="offer" type="number" min="0" step="1000"></div>
+          <div class="f"><label for="myRating">My rating</label><select id="myRating" name="myRating"><option value="">Not rated</option><option value="1">1, no</option><option value="2">2, weak</option><option value="3">3, possible</option><option value="4">4, good</option><option value="5">5, must have</option></select></div>
+        </div>
+        <div class="f"><label for="valNote">Valuation basis</label><input id="valNote" name="valNote" placeholder="Comparable, agent view, your own read"></div>
+      </details>
 
-      <fieldset>
-        <legend>Owner</legend>
+      <details class="sec">
+        <summary>Owner</summary>
         <div class="f"><label for="owner">Owner name</label><input id="owner" name="owner"></div>
         <div class="f"><label for="ownerIs">Owner is</label><select id="ownerIs" name="ownerIs"><option>Unknown</option><option>Private individual, resident</option><option>Private individual, non-resident</option><option>Company</option><option>Management company holds AL</option></select></div>
         <div class="f"><label for="ownerAddr">Owner address (from registry)</label><input id="ownerAddr" name="ownerAddr"></div>
@@ -313,29 +365,29 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
           <div class="f"><label for="email">Email</label><input id="email" name="email"></div>
         </div>
         <div class="f"><label for="keyholder">Key holder / cleaner / agent</label><input id="keyholder" name="keyholder"></div>
-      </fieldset>
+      </details>
 
-      <fieldset>
-        <legend>Approach</legend>
+      <details class="sec">
+        <summary>Approach</summary>
         <div class="g2">
           <div class="f"><label for="status">Status</label><select id="status" name="status"></select></div>
           <div class="f"><label for="nextDate">Next action date</label><input id="nextDate" name="nextDate" type="date"></div>
         </div>
         <div class="f"><label for="nextAction">Next action</label><input id="nextAction" name="nextAction" placeholder="Send letter, call cleaner, chase solicitador"></div>
         <div class="f"><label for="notes">Notes</label><textarea id="notes" name="notes"></textarea></div>
-      </fieldset>
+      </details>
 
-      <fieldset>
-        <legend>Photos</legend>
+      <details class="sec">
+        <summary>Photos</summary>
         <div class="photos" id="photos"></div>
         <div class="actions"><button type="button" class="btn" id="photoBtn">Add photo</button><button type="button" class="btn" id="hereBtn">Pin at my location</button></div>
-      </fieldset>
+      </details>
 
-      <fieldset>
-        <legend>Contact log</legend>
+      <details class="sec">
+        <summary>Contact log</summary>
         <div class="log" id="log"></div>
         <div class="addlog"><input id="logText" placeholder="What happened" aria-label="Log entry"><button type="button" class="btn" id="logAdd">Add</button></div>
-      </fieldset>
+      </details>
     </form>
     <div class="foot">
       <span class="state" id="saveState"></span>
@@ -352,9 +404,10 @@ const SB_URL="https://onmuenuokmiwmonfdozh.supabase.co", SB_KEY="sb_publishable_
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let me=null, canWrite=true;
 const STATUSES=[["none","Not contacted","--s-none"],["letter","Letter sent","--s-letter"],["talks","In talks","--s-talks"],["offer","Offer made","--s-offer"],["declined","Declined","--s-declined"],["bought","Bought","--s-bought"]];
-const FIELDS=["name","rnalName","source","address","pinStatus","pinLocked","cadSection","cadParcel","cadArea","cadNic","certCode","certStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
+const FIELDS=["name","rnalName","source","address","pinStatus","pinLocked","cadSection","cadParcel","cadArea","cadNic","certCode","certStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","estHigh","offer","myRating","valNote","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
 const $=id=>document.getElementById(id);
 const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+let listTab=localStorage.getItem("listTab")||"focus";
 let props={}, sel=null, placing=false, adding=false, dirty=false, markers={}, pendingAdd=null;
 
 function createRecord(init){
@@ -381,6 +434,27 @@ const readiness=p=>[p.pinStatus==="confirmed",!!p.owner,!!(p.phone||p.email||p.o
 const light=p=>{const r=readiness(p);return r===3?"green":r===0?"red":"amber"};
 const LIGHT={green:"var(--s-bought)",amber:"var(--s-letter)",red:"var(--s-declined)"};
 const lightHex=p=>getComputedStyle(document.documentElement).getPropertyValue({green:"--s-bought",amber:"--s-letter",red:"--s-declined"}[light(p)]).trim();
+// What we know about a record, in the order shown on the meter
+const BITS=[["Name",p=>!!(p.name||p.rnalName)],["Pin",p=>p.pinStatus==="confirmed"],["Plot",p=>!!p.cadParcel],["Owner",p=>!!p.owner],["Contact",p=>!!(p.phone||p.email||p.ownerAddr)],["Value",p=>!!(+p.estValue||+p.estHigh)],["Rating",p=>+p.myRating>0]];
+const bits=p=>BITS.map(([k,f])=>[k,!!f(p)]);
+const distKm=p=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(isNaN(lat))return null;const R=6371,dLat=(lat-HOME[0])*Math.PI/180,dLng=(lng-HOME[1])*Math.PI/180,a=Math.sin(dLat/2)**2+Math.cos(HOME[0]*Math.PI/180)*Math.cos(lat*Math.PI/180)*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(a))};
+const fmtDist=d=>d<1?Math.round(d*100)*10+" m":d.toFixed(1)+" km";
+const fmtEur=v=>"€"+(v>=1e6?(v/1e6).toFixed(v%1e6?2:1).replace(/\.?0+$/,"")+"m":Math.round(v/1000)+"k");
+const plotM2=p=>+(p.cadArea||p.plotArea||(p.boundary&&p.boundary.length>2?areaM2(p.boundary):0))||0;
+// Rough rule of thumb for Azeitão quintas and villas, 2026 asking levels. Base by bedrooms plus land beyond a garden plot. Always shown as indicative.
+function guessValue(p){const b=+p.beds||3,a=plotM2(p);const base=350000+110000*b+Math.min(600000,Math.max(0,a-2000)*12);const r=v=>Math.round(v/25000)*25000;return {low:r(base*.85),high:r(base*1.25),why:(p.beds?b+" beds":"3 beds assumed")+(a?", "+fmtArea(a):"")}}
+// Priority score 0-100. Your own rating weighs most, then what we know, then fit and momentum.
+function score(p){
+  if(p.status==="declined"||p.status==="bought")return {total:0,why:[sLabel(p.status)]};
+  const m=missing(p),r=+p.myRating||0,why=[];let t=0;const add=(n,w)=>{t+=n;if(w&&n>0)why.push(w)};
+  add(r?r*6:12,r?"rated "+r+"/5":"");
+  add(!m.pin&&!m.confirm?8:0,"located");add(!m.owner?10:0,"owner known");add(!m.contact?10:0,"contact known");add(p.cadParcel?4:0,"");
+  const d=distKm(p);add(d==null?0:d<1?10:d<2?7:d<4?3:0,d!=null&&d<2?fmtDist(d)+" from home":"");
+  const a=plotM2(p);add(a>=10000?8:a>=3000?5:a>0?2:0,a>=10000?fmtArea(a):"");
+  add(/^Private/.test(p.ownerIs||"")?6:/Company|Management/.test(p.ownerIs||"")?1:3,/Company|Management/.test(p.ownerIs||"")?"held via company":"");
+  add({letter:4,talks:10,offer:12}[p.status]||0,p.status&&p.status!=="none"?sLabel(p.status).toLowerCase():"");
+  return {total:Math.round(t),why};
+}
 const missing=p=>({pin:isNaN(parseFloat(p.lat)),confirm:!isNaN(parseFloat(p.lat))&&p.pinStatus!=="confirmed",al:!p.al,owner:!p.owner,contact:!(p.phone||p.email||p.ownerAddr),address:!p.address});
 
 for(const [v,l,c] of STATUSES){
@@ -392,6 +466,7 @@ for(const [c,l] of [["red","Nothing yet"],["amber","Partly found"],["green","Loc
 const sVar=v=>(STATUSES.find(s=>s[0]===v)||STATUSES[0])[2];
 const sColor=v=>getComputedStyle(document.documentElement).getPropertyValue(sVar(v)).trim()||"#888";
 const sLabel=v=>(STATUSES.find(s=>s[0]===v)||STATUSES[0])[1];
+function fo(id){const el=$(id);const d=el&&el.closest("details");if(d)d.open=true;if(el){el.focus();el.scrollIntoView({block:"center"})}}
 function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
 
 // ---------- storage ----------
@@ -601,17 +676,22 @@ $("geoBtn").onclick=async()=>{
 function renderList(){
   const q=norm($("q").value.trim()), fs=$("fStatus").value;
   const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:fs==="_spotted"?(p.source||"register")!=="register":fs==="_green"?light(p)==="green":fs==="_amber"?light(p)==="amber":fs==="_red"?light(p)==="red":m.contact};
+  const focus=listTab==="focus";
   const items=Object.values(props).filter(p=>pass(p)&&(!q||norm([p.name,p.rnalName,p.address,p.owner,p.keyholder,p.al,p.notes].join(" ")).includes(q)))
-    .sort((a,b)=>title(a).localeCompare(title(b)));
+    .sort(focus?((a,b)=>score(b).total-score(a).total||title(a).localeCompare(title(b))):((a,b)=>title(a).localeCompare(title(b))));
+  $("tabNote").textContent=focus?"ranked by priority":"A to Z";
   const rows=$("rows"); rows.innerHTML="";
   if(!items.length){rows.innerHTML=`<div class="empty">${Object.keys(props).length?"Nothing matches that search.":"No properties yet. Click Add property, then click the house on the map."}</div>`}
   for(const p of items){
     const b=document.createElement("button"); b.type="button"; b.className="row"+(p.id===sel?" sel":""); b.style.setProperty("--ring",LIGHT[light(p)]);
-    b.innerHTML=`<span class="dot" style="background:var(${sVar(p.status)})"></span><span><div class="addr"></div><div class="meta"></div></span><span class="ref"></span>`;
+    b.innerHTML=`<span class="dot" style="background:var(${sVar(p.status)})"></span><span><div class="addr"></div><div class="meta"></div><div class="why" hidden></div><div class="mini">${bits(p).map(([k,ok])=>`<i class="${ok?"ok":""}" title="${k}"></i>`).join("")}</div></span><span class="ref"></span>`;
     const m=missing(p);
     b.querySelector(".addr").textContent=title(p);
+
     b.querySelector(".meta").textContent=[p.rnalName&&norm(p.rnalName)!==norm(p.name)?"AL: "+p.rnalName:null,(p.address||"").split(",")[0]||null,p.owner||(p.keyholder?"Held by "+p.keyholder.split(" (")[0]:"Owner unknown"),sLabel(p.status)].filter(Boolean).join(" · ");
     b.querySelector(".ref").textContent=(p.cadArea?fmtArea(+p.cadArea)+" · ":p.boundary?fmtArea(areaM2(p.boundary))+" · ":"")+(m.pin?"no pin":m.confirm?"pin approx.":(p.al||((p.source||"register")!=="register"?"no AL":"")));
+    if(focus){const sc=score(p);const w=b.querySelector(".why");w.hidden=false;w.textContent=sc.why.slice(0,3).join(" · ")||"nothing known yet";const sp=document.createElement("div");sp.className="score";sp.textContent=sc.total;const ref=b.querySelector(".ref");const t=ref.textContent;ref.textContent="";ref.append(sp,document.createTextNode(t));
+      b.querySelector(".meta").textContent=[p.owner||(p.keyholder?"Held by "+p.keyholder.split(" (")[0]:"Owner unknown"),p.status&&p.status!=="none"?sLabel(p.status):null].filter(Boolean).join(" · ")}
     b.onclick=()=>{open(p.id);const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(!isNaN(lat))map.panTo([lat,lng])}; rows.appendChild(b);
   }
   const c={}; for(const p of Object.values(props)) c[p.status||"none"]=(c[p.status||"none"]||0)+1;
@@ -628,6 +708,7 @@ function open(id){document.body.classList.add("drawer-open");
   for(const f of FIELDS){$(f).value=f==="pinLocked"?(p.pinLocked?"1":""):(p[f]??(f==="status"?"none":""))}
   $("dTitle").textContent=title(p);
   renderLockUI(p);
+  document.querySelectorAll("#form details.sec").forEach(d=>d.open=window.innerWidth>760);
   renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); renderBoundaryUI(p); renderCert(p); setDirty(false);
   $("drawer").hidden=false; if(window.innerWidth<=760) $("list").hidden=true;
   renderAll(); setTimeout(()=>map.invalidateSize(),50);
@@ -642,27 +723,55 @@ $("form").addEventListener("change",()=>{const c=current();setDirty(true);render
 $("form").addEventListener("focusout",()=>{if(dirty){clearTimeout(saveTimer);save()}});
 $("pinStatus").addEventListener("change",()=>{if($("pinStatus").value!=="confirmed"&&props[sel]&&props[sel].pinLocked){props[sel]={...props[sel],pinLocked:false};renderLockUI(props[sel]);renderPins()}});
 $("listing").addEventListener("change",()=>{const v=$("listing").value.trim();if(!v||!sel)return;const info=parseListing(v);$("listing").value=info.listing;props[sel]={...props[sel],listingId:info.listingId,site:info.site};if(info.nameHint&&!$("name").value)$("name").value=info.nameHint});
-function renderTodo(p){
-  const T=$("todo"); T.innerHTML=""; const m=missing(p);
-  const items=[
+function todoItems(p){
+  const m=missing(p);
+  return [
     m.pin&&["Place on map","warn",()=>{placing=true;$("locateBtn").classList.add("on");renderPins();toast("Click the house on the map")}],
     m.confirm&&["Confirm pin on satellite","warn",()=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);map.setView([lat,lng],18);sat.addTo(map);toast("Drag the pin onto the house, then press Lock.")}],
     !m.pin&&!m.confirm&&!p.pinLocked&&["Lock pin","",()=>$("lockBtn").click()],
-    m.address&&!m.pin&&["Add address","",()=>$("address").focus()],
-    m.al&&(p.source||"register")==="register"&&["Find AL number",p.listing?"warn":"",()=>{if(p.listing)window.open(p.listing,"_blank");$("al").focus();toast(p.listing?"The AL number is in the listing's details or house rules. Paste it here.":"Search the RNAL register by address, then paste the number.")}],
+    m.address&&!m.pin&&["Add address","",()=>fo("address")],
+    m.al&&(p.source||"register")==="register"&&["Find AL number",p.listing?"warn":"",()=>{if(p.listing)window.open(p.listing,"_blank");fo("al");toast(p.listing?"The AL number is in the listing's details or house rules. Paste it here.":"Search the RNAL register by address, then paste the number.")}],
     !p.cadParcel&&!m.pin&&["Attach cadastre plot","",()=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);map.setView([lat,lng],17);if(cad&&!map.hasLayer(cad))cad.addTo(map);if(window.innerWidth<=760){$("drawer").hidden=true;$("list").hidden=true}toast("Tap the red plot around the pin, then Attach")}],
     m.owner&&p.cadParcel&&!p.certCode&&p.certStatus!=="none"&&["Request certidão (€15)","warn",()=>openCert()],
     m.owner&&p.certCode&&(p.certStatus||"requested")==="requested"&&["Pay €15 by Multibanco","warn",()=>{renderCert(p);$("certInfo").scrollIntoView({block:"center"});toast(p.certMb?"Entity "+p.certMb.entity+", reference "+p.certMb.reference:"Pay the reference on your comprovativo email")}],
     m.owner&&p.certCode&&p.certStatus==="paid"&&["Check if certidão is out","",()=>$("certOpen").click()],
-    m.owner&&p.certCode&&p.certStatus==="available"&&["Copy owner from certidão","warn",()=>{$("certOpen").click();$("owner").focus()}],
-    m.owner&&!p.cadParcel&&(p.source||"register")!=="register"&&["Find owner via land registry","",()=>{$("descricao").focus();toast("Attach the cadastre plot first, then look it up on Predial Online.")}],
-    m.owner&&(p.source||"register")==="register"&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");$("owner").focus();toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
-    m.contact&&!m.owner&&["Add contact details","",()=>$("phone").focus()],
+    m.owner&&p.certCode&&p.certStatus==="available"&&["Copy owner from certidão","warn",()=>{$("certOpen").click();fo("owner")}],
+    m.owner&&!p.cadParcel&&(p.source||"register")!=="register"&&["Find owner via land registry","",()=>{fo("descricao");toast("Attach the cadastre plot first, then look it up on Predial Online.")}],
+    m.owner&&(p.source||"register")==="register"&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");fo("owner");toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
+    m.contact&&!m.owner&&["Add contact details","",()=>fo("phone")],
   ].filter(Boolean);
-  if(!items.length){T.innerHTML='<span class="done">'+(complete(p)?"Green, ready to write":"Record complete")+(locked(p)?", pin locked":"")+'</span>';return}
-  if(locked(p)){const sp=document.createElement("span");sp.className="done";sp.textContent="Pin locked";T.appendChild(sp)}
-  for(const [l,c,fn] of items){const b=document.createElement("button");b.type="button";b.className=c;b.textContent=l;b.onclick=fn;T.appendChild(b)}
 }
+function renderTodo(p){
+  const T=$("todo"); T.innerHTML=""; const items=todoItems(p);
+  const P=$("primaryAct");
+  if(!items.length){P.textContent=complete(p)?(p.status==="none"||!p.status?"Ready. Write to "+(p.owner.split(" ")[0]):"Log the next step"):"Record complete";P.onclick=()=>fo(p.status==="none"||!p.status?"status":"nextAction");T.hidden=true;renderCard(p);return}
+  const [l,c,fn]=items[0];P.textContent=l;P.onclick=fn;
+  T.hidden=items.length<2;
+  for(const [l,c,fn] of items.slice(1)){const b=document.createElement("button");b.type="button";b.className=c;b.textContent=l;b.onclick=fn;T.appendChild(b)}
+  renderCard(p);
+}
+function renderCard(p){
+  const m=missing(p),L=light(p);
+  $("sumLight").style.background="var("+sVar(p.status)+")";$("sumLight").style.setProperty("--ring",LIGHT[L]);
+  const a=plotM2(p),d=distKm(p),sc=score(p);
+  const parts=[];
+  parts.push(p.owner?"Owner <b>"+p.owner+"</b>"+(p.ownerIs&&p.ownerIs!=="Unknown"?" ("+p.ownerIs.toLowerCase().replace("private individual, ","")+")":""):"Owner unknown");
+  parts.push(p.email||p.phone?"reachable by "+(p.email?"email":"phone"):p.ownerAddr?"reachable by post":"no contact yet");
+  parts.push(m.pin?"not on the map":m.confirm?"pin approximate":"located"+(d!=null?", "+fmtDist(d)+" from home":""));
+  if(a)parts.push(fmtArea(a)+(p.cadParcel?" plot":" drawn"));
+  if(p.beds)parts.push(p.beds+" beds");
+  $("sumText").innerHTML=parts.join(", ")+". "+(p.status&&p.status!=="none"?"<b>"+sLabel(p.status)+"</b>. ":"")+"Priority <b>"+sc.total+"</b>/100.";
+  $("meter").innerHTML=bits(p).map(([k,ok])=>`<span class="${ok?"ok":""}"><i></i>${k}</span>`).join("");
+  const r=+p.myRating||0;$("stars").innerHTML=[1,2,3,4,5].map(i=>`<button type="button" class="${i<=r?"on":""}" data-r="${i}" aria-label="Rate ${i}">★</button>`).join("");
+  const lo=+p.estValue||0,hi=+p.estHigh||0;
+  if(lo||hi)$("sumVal").innerHTML="<b>"+(lo&&hi?fmtEur(lo)+" to "+fmtEur(hi):fmtEur(lo||hi))+"</b>"+(p.offer?", offer "+fmtEur(+p.offer):"")+(p.valNote?"<br>"+p.valNote:"");
+  else{const g=guessValue(p);$("sumVal").innerHTML="Indicative "+fmtEur(g.low)+" to "+fmtEur(g.high)+"<br><span>rule of thumb, "+g.why+"</span> · <button type=\"button\" id=\"useGuess\">use it</button>";
+    $("useGuess").onclick=()=>{$("estValue").value=g.low;$("estHigh").value=g.high;$("valNote").value="Rule of thumb, "+g.why+", to be checked";setDirty(true);save();renderTodo(current())}}
+}
+$("stars").onclick=e=>{const b=e.target.closest("button");if(!b||!sel)return;const r=+b.dataset.r;$("myRating").value=(+$("myRating").value===r?"":String(r));setDirty(true);save();renderTodo(current())};
+$("keyBtn").onclick=()=>$("legend").classList.toggle("show");
+$("tabFocus").classList.toggle("on",listTab==="focus");$("tabAll").classList.toggle("on",listTab==="all");
+$("tabFocus").onclick=$("tabAll").onclick=e=>{listTab=e.target.dataset.tab;localStorage.setItem("listTab",listTab);$("tabFocus").classList.toggle("on",listTab==="focus");$("tabAll").classList.toggle("on",listTab==="all");renderList()};
 $("form").addEventListener("submit",e=>{e.preventDefault();save()});
 function current(){const p={...props[sel]};for(const f of FIELDS)p[f]=$(f).value;p.pinLocked=!!(props[sel]&&props[sel].pinLocked);return p}
 function renderCert(p){
