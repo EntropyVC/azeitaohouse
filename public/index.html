@@ -419,10 +419,10 @@ function addCadastre(token){
   cad.on("click",e=>{if(drawing||placing||adding)return; L.DomEvent.stop(e); openParcel(e.layer.properties,e.latlng)});
   cad.addTo(map); layerCtl.addOverlay(cad,"Cadastre plots");
 }
-async function openParcel(props,latlng){
-  const nic=props.nic; const popup=L.popup({maxWidth:300}).setLatLng(latlng).setContent('<div class="who">Plot '+(props.label||nic)+' · '+fmtArea(props.area_m2||0)+'<br>Loading details…</div>').openOn(map);
+async function openParcel(fp,latlng){
+  const nic=fp.nic; const popup=L.popup({maxWidth:300}).setLatLng(latlng).setContent('<div class="who">Plot '+(fp.label||nic)+' · '+fmtArea(fp.area_m2||0)+'<br>Loading details…</div>').openOn(map);
   let d=null; try{const r=await fetch("/api/cad/predio?nic="+encodeURIComponent(nic),{headers:{authorization:"Bearer "+cadToken}});if(r.ok)d=await r.json()}catch(e){}
-  if(!d){popup.setContent('<div class="who">Plot '+(props.label||nic)+'<br>Details unavailable.</div>');return}
+  if(!d){popup.setContent('<div class="who">Plot '+(fp.label||nic)+'<br>Details unavailable.</div>');return}
   cadSel=d;
   const pred="https://www.predialonline.pt/PredialOnline/";
   const html='<div style="font:13px var(--body);min-width:220px"><b>Plot '+d.label+'</b><br>Section '+d.section+', parcel '+d.parcel+' · '+fmtArea(d.area||0)+'<br><span class="who">'+(d.parish||"")+'</span>'+
