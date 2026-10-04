@@ -9,7 +9,9 @@ const props = data.properties || data;
 // never move a pin the user has confirmed in the app
 const existing = await (await fetch(`${url}/rest/v1/properties?select=id,data`, { headers: { apikey: key, Authorization: `Bearer ${key}` } })).json();
 const lockedPins = new Map(existing.filter(r => r.data && r.data.pinStatus === "confirmed").map(r => [r.id, { lat: r.data.lat, lng: r.data.lng, pinStatus: "confirmed" }]));
-const rows = Object.entries(props).map(([id, p]) => ({ id, data: { ...p, id, ...(lockedPins.get(id) || {}) }, updated_at: new Date().toISOString(), updated_by: "seed" }));
+// and never drop a certidão request made from the app
+const certs = new Map(existing.filter(r => r.data && r.data.certCode).map(r => [r.id, { certCode: r.data.certCode, certStatus: r.data.certStatus, certMb: r.data.certMb }]));
+const rows = Object.entries(props).map(([id, p]) => ({ id, data: { ...p, id, ...(lockedPins.get(id) || {}), ...(certs.get(id) || {}) }, updated_at: new Date().toISOString(), updated_by: "seed" }));
 if (lockedPins.size) console.log(`${lockedPins.size} confirmed pins kept as they are`);
 for (let i = 0; i < rows.length; i += 100) {
   const r = await fetch(`${url}/rest/v1/properties?on_conflict=id`, {

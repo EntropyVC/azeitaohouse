@@ -124,7 +124,9 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
 .login[hidden]{display:none}
 .login .card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:24px;width:360px;max-width:100%;display:flex;flex-direction:column;gap:12px}
 .login h1{font:600 22px/1.1 var(--display);margin:0}
-.scanfab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:1150;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.scanfab{position:fixed;right:16px;}
+@media (min-width:761px){body.drawer-open .scanfab{right:440px}}
+.scanfab{bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:1150;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.2)}
 .cands{display:flex;flex-direction:column;gap:6px}
 .cands button{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:9px 12px}
 .cands button b{display:block}
@@ -135,6 +137,7 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
 .photos img{width:100%;height:100%;object-fit:cover;display:block}
 .who{font-size:12px;color:var(--muted)}
 @media (max-width:760px){header .sub{display:none}header{gap:8px;padding:8px 12px}.counts{display:none}header h1{font-size:17px}input,select,textarea{font-size:16px}.rows{padding-bottom:80px}.drawer form{padding-bottom:90px}}
+.cert{border-top:1px dashed var(--line);margin-top:8px;padding-top:8px}.certinfo{font-size:12.5px;color:var(--muted);line-height:1.5;margin:4px 0}.certinfo b{color:var(--ink)}.certbtns{display:flex;gap:6px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -201,6 +204,22 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
   </div>
 </div>
 
+<div class="modal" id="certModal" hidden>
+  <div class="card">
+    <h2>Request a Certidão Permanente</h2>
+    <p class="muted" id="certWhat"></p>
+    <div class="f"><label for="certFreg">Registry parish (pre-2013)</label><select id="certFreg"><option value="151204">S. Lourenço (Vila Nogueira, Picheleiros, Casais da Serra, Piedade, Portela, Brejos, Irmãos)</option><option value="151206">S. Simão (Vila Fresca and around)</option></select></div>
+    <div class="f"><label for="certNat">Article type</label><select id="certNat"><option value="R">Rústico (cadastre parcel)</option><option value="U">Urbano (house article, if you have it)</option></select></div>
+    <p class="muted small" id="certPreview">Checking with the registry…</p>
+    <div class="actions">
+      <button type="button" class="btn" id="certCancel">Cancel</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn primary" id="certGo" disabled>File request</button>
+    </div>
+    <p class="muted small">Filing creates a €15 Multibanco reference in your name, payable within 5 days. The registry then takes about two working days to match the plot and release the certificate.</p>
+  </div>
+</div>
+
 <main>
   <aside class="list" id="list">
     <div class="tools">
@@ -264,6 +283,14 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
           <div class="f"><label for="cadArea">Official plot area m²</label><input id="cadArea" name="cadArea" type="number" min="0"></div>
           <div class="f"><label for="cadNic">Cadastre map no. (NIC)</label><input id="cadNic" name="cadNic" placeholder="AAA 000 115 561"></div>
         </div>
+        <div class="cert" id="cert">
+          <div class="g2">
+            <div class="f"><label for="certCode">Certidão permanente code</label><input id="certCode" name="certCode" placeholder="PA-0000-00000-151209-000000"></div>
+            <div class="f"><label for="certStatus">Certidão status</label><select id="certStatus" name="certStatus"><option value="">Not requested</option><option value="requested">Requested, awaiting payment</option><option value="paid">Paid, awaiting registry</option><option value="available">Available</option><option value="none">No registered plot</option></select></div>
+          </div>
+          <div class="certinfo" id="certInfo"></div>
+          <div class="certbtns"><button type="button" class="btn" id="certReq">Request certidão (€15)</button><button type="button" class="btn" id="certOpen" hidden>Open certidão</button><button type="button" class="btn" id="certPaid" hidden>Mark as paid</button></div>
+        </div>
         <div class="g2">
           <div class="f"><label for="descricao">Nº descrição predial</label><input id="descricao" name="descricao"></div>
           <div class="f"><label for="artigo">Artigo matricial</label><input id="artigo" name="artigo"></div>
@@ -324,7 +351,7 @@ const SB_URL="https://onmuenuokmiwmonfdozh.supabase.co", SB_KEY="sb_publishable_
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let me=null, canWrite=true;
 const STATUSES=[["none","Not contacted","--s-none"],["letter","Letter sent","--s-letter"],["talks","In talks","--s-talks"],["offer","Offer made","--s-offer"],["declined","Declined","--s-declined"],["bought","Bought","--s-bought"]];
-const FIELDS=["name","rnalName","source","address","pinStatus","pinLocked","cadSection","cadParcel","cadArea","cadNic","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
+const FIELDS=["name","rnalName","source","address","pinStatus","pinLocked","cadSection","cadParcel","cadArea","cadNic","certCode","certStatus","al","type","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","offer","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
 const $=id=>document.getElementById(id);
 const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let props={}, sel=null, placing=false, adding=false, dirty=false, markers={}, pendingAdd=null;
@@ -593,24 +620,24 @@ function renderList(){
 function renderAll(){renderList();renderPins();renderBoundaries()}
 
 // ---------- drawer ----------
-function open(id){
+function open(id){document.body.classList.add("drawer-open");
   if(dirty&&sel&&sel!==id) save();
   sel=id; const p=props[id]; if(!p) return;
   placing=false; adding=false; $("locateBtn").classList.remove("on");
   for(const f of FIELDS){$(f).value=f==="pinLocked"?(p.pinLocked?"1":""):(p[f]??(f==="status"?"none":""))}
   $("dTitle").textContent=title(p);
   renderLockUI(p);
-  renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); renderBoundaryUI(p); setDirty(false);
+  renderLog(p); renderLinks(p); renderTodo(p); renderPhotos(p); renderBoundaryUI(p); renderCert(p); setDirty(false);
   $("drawer").hidden=false; if(window.innerWidth<=760) $("list").hidden=true;
   renderAll(); setTimeout(()=>map.invalidateSize(),50);
 }
-function close(){if(dirty){clearTimeout(saveTimer);save()}sel=null;placing=false;$("drawer").hidden=true;renderAll();setTimeout(()=>map.invalidateSize(),50)}
+function close(){document.body.classList.remove("drawer-open");if(dirty){clearTimeout(saveTimer);save()}sel=null;placing=false;$("drawer").hidden=true;renderAll();setTimeout(()=>map.invalidateSize(),50)}
 function setDirty(d){dirty=d;$("saveState").textContent=d?"Unsaved changes":"";$("saveBtn").disabled=!d}
 const title=p=>p.name||p.rnalName||p.address||(p.site?p.site+" listing":"New property");
 let saveTimer=null;
 function queueSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{if(dirty)save()},900)}
-$("form").addEventListener("input",()=>{const c=current();setDirty(true);$("dTitle").textContent=title(c);renderLinks(c);renderTodo(c);queueSave()});
-$("form").addEventListener("change",()=>{const c=current();setDirty(true);renderTodo(c);queueSave()});
+$("form").addEventListener("input",()=>{const c=current();setDirty(true);$("dTitle").textContent=title(c);renderLinks(c);renderTodo(c);renderCert(c);queueSave()});
+$("form").addEventListener("change",()=>{const c=current();setDirty(true);renderTodo(c);renderCert(c);queueSave()});
 $("form").addEventListener("focusout",()=>{if(dirty){clearTimeout(saveTimer);save()}});
 $("pinStatus").addEventListener("change",()=>{if($("pinStatus").value!=="confirmed"&&props[sel]&&props[sel].pinLocked){props[sel]={...props[sel],pinLocked:false};renderLockUI(props[sel]);renderPins()}});
 $("listing").addEventListener("change",()=>{const v=$("listing").value.trim();if(!v||!sel)return;const info=parseListing(v);$("listing").value=info.listing;props[sel]={...props[sel],listingId:info.listingId,site:info.site};if(info.nameHint&&!$("name").value)$("name").value=info.nameHint});
@@ -623,7 +650,10 @@ function renderTodo(p){
     m.address&&!m.pin&&["Add address","",()=>$("address").focus()],
     m.al&&(p.source||"register")==="register"&&["Find AL number",p.listing?"warn":"",()=>{if(p.listing)window.open(p.listing,"_blank");$("al").focus();toast(p.listing?"The AL number is in the listing's details or house rules. Paste it here.":"Search the RNAL register by address, then paste the number.")}],
     !p.cadParcel&&!m.pin&&["Attach cadastre plot","",()=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);map.setView([lat,lng],17);if(cad&&!map.hasLayer(cad))cad.addTo(map);if(window.innerWidth<=760){$("drawer").hidden=true;$("list").hidden=true}toast("Tap the red plot around the pin, then Attach")}],
-    m.owner&&p.cadParcel&&["Look up owner on Predial Online","warn",()=>{window.open("https://www.predialonline.pt/PredialOnline/","_blank");toast("Informação Predial Simplificada by matriz, rústico, Azeitão, section "+p.cadSection+" article "+p.cadParcel)}],
+    m.owner&&p.cadParcel&&!p.certCode&&p.certStatus!=="none"&&["Request certidão (€15)","warn",()=>openCert()],
+    m.owner&&p.certCode&&(p.certStatus||"requested")==="requested"&&["Pay €15 by Multibanco","warn",()=>{renderCert(p);$("certInfo").scrollIntoView({block:"center"});toast(p.certMb?"Entity "+p.certMb.entity+", reference "+p.certMb.reference:"Pay the reference on your comprovativo email")}],
+    m.owner&&p.certCode&&p.certStatus==="paid"&&["Check if certidão is out","",()=>$("certOpen").click()],
+    m.owner&&p.certCode&&p.certStatus==="available"&&["Copy owner from certidão","warn",()=>{$("certOpen").click();$("owner").focus()}],
     m.owner&&!p.cadParcel&&(p.source||"register")!=="register"&&["Find owner via land registry","",()=>{$("descricao").focus();toast("Attach the cadastre plot first, then look it up on Predial Online.")}],
     m.owner&&(p.source||"register")==="register"&&["Look up owner","",()=>{window.open("https://rnt.turismodeportugal.pt/RNT/ConsultaAoRegisto.aspx","_blank");$("owner").focus();toast(p.al?"Search RNAL for "+p.al+" and copy the holder's name and address.":"Add the AL number first for an exact match, or search RNAL by address.")}],
     m.contact&&!m.owner&&["Add contact details","",()=>$("phone").focus()],
@@ -634,6 +664,54 @@ function renderTodo(p){
 }
 $("form").addEventListener("submit",e=>{e.preventDefault();save()});
 function current(){const p={...props[sel]};for(const f of FIELDS)p[f]=$(f).value;p.pinLocked=!!(props[sel]&&props[sel].pinLocked);return p}
+function renderCert(p){
+  const mb=p.certMb||{};const has=!!p.certCode;
+  $("certReq").hidden=!p.cadParcel||has;$("certOpen").hidden=!has;$("certPaid").hidden=!has||(p.certStatus||"requested")!=="requested";
+  let t="";
+  if(!p.cadParcel)t="Attach the cadastre plot first, the certidão is requested by its section and parcel.";
+  else if(!has)t="Files the request with the land registry for rústico article "+p.cadParcel+", section "+p.cadSection+", and brings back the Multibanco reference and the certificate code.";
+  else{
+    if(mb.pedido)t+="Pedido <b>"+mb.pedido+"</b>"+(mb.at?" on "+mb.at.slice(0,10):"")+". ";
+    if(mb.entity)t+="Multibanco entity <b>"+mb.entity+"</b>, reference <b>"+mb.reference+"</b>, <b>"+mb.amount+" €</b>"+(mb.deadline?", pay by "+mb.deadline:"")+". ";
+    if((p.certStatus||"")==="available")t+="Open it with the code above, the owner is under Inscrições, Aquisição.";
+    else if(p.certStatus==="paid")t+="The registry releases it about two working days after payment, you get an email.";
+  }
+  $("certInfo").innerHTML=t;
+}
+let certDry=null;
+async function certCall(body){
+  const {data:{session}}=await sb.auth.getSession();
+  const r=await fetch("/api/cert/request",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+(session?session.access_token:"")},body:JSON.stringify(body)});
+  const d=await r.json().catch(()=>({error:"Registry call failed ("+r.status+")"}));
+  if(!r.ok||d.error)throw new Error(d.error||("Registry call failed ("+r.status+")"));
+  return d;
+}
+function certPlot(){const p=current();return {id:p.id,natureza:$("certNat").value,artigo:p.cadParcel,seccao:p.cadSection,freguesia:$("certFreg").value}}
+async function certPreview(){
+  $("certGo").disabled=true;$("certPreview").textContent="Checking with the registry…";
+  try{certDry=await certCall({dryRun:true,plots:[certPlot()]});
+    $("certPreview").textContent="Registry summary: "+(certDry.summary.lines[0]||"")+" €. Total "+certDry.summary.total+" €.";$("certGo").disabled=false}
+  catch(e){certDry=null;$("certPreview").textContent=e.message}
+}
+function openCert(){
+  const p=current();if(!p.cadParcel){toast("Attach the cadastre plot first");return}
+  $("certWhat").textContent=title(p)+", rústico article "+p.cadParcel+", section "+p.cadSection+", Azeitão.";
+  $("certFreg").value="151204";$("certNat").value="R";$("certModal").hidden=false;certPreview();
+}
+$("certReq").onclick=openCert;
+$("certCancel").onclick=()=>{$("certModal").hidden=true};
+$("certFreg").onchange=certPreview;$("certNat").onchange=certPreview;
+$("certGo").onclick=async()=>{
+  $("certGo").disabled=true;$("certPreview").textContent="Filing with the registry…";
+  try{const d=await certCall({dryRun:false,plots:[certPlot()]});const pl=d.plots[0]||{};
+    $("certCode").value=pl.code||"";$("certStatus").value="requested";
+    props[sel]={...props[sel],certMb:{pedido:d.pedido,at:d.at,entity:d.mb.entity,reference:d.mb.reference,amount:d.mb.amount,deadline:d.mb.deadline},log:[...(props[sel].log||[]),{date:today(),text:"Certidão permanente requested, pedido "+d.pedido+", code "+(pl.code||"?")+". MB "+d.mb.entity+" / "+d.mb.reference+" / "+d.mb.amount+" € by "+d.mb.deadline+"."}]};
+    setDirty(true);await save();renderCert(current());renderTodo(current());renderLog(props[sel]);$("certModal").hidden=true;
+    toast("Filed. Pay "+d.mb.amount+" € to entity "+d.mb.entity+", reference "+d.mb.reference)}
+  catch(e){$("certPreview").textContent=e.message;$("certGo").disabled=false}
+};
+$("certOpen").onclick=()=>{const c=$("certCode").value.trim();if(c&&navigator.clipboard)navigator.clipboard.writeText(c).catch(()=>{});window.open("https://www.predialonline.pt/PredialOnline/FRM005RPOLCP_input.action","_blank");toast(c?"Code copied, paste it into Código da Certidão":"Add the certidão code first")};
+$("certPaid").onclick=()=>{$("certStatus").value="paid";props[sel]={...props[sel],log:[...(props[sel].log||[]),{date:today(),text:"Certidão fee paid by Multibanco."}]};setDirty(true);save();renderCert(current());renderTodo(current());renderLog(props[sel])};
 function renderLinks(p){
   const L_=$("links"); L_.innerHTML="";
   const lat=parseFloat(p.lat),lng=parseFloat(p.lng);
@@ -665,7 +743,7 @@ $("saveBtn").onclick=save;
 $("closeBtn").onclick=close;
 $("delBtn").onclick=()=>{$("delConfirm").hidden=false;$("delBtn").hidden=true};
 $("delNo").onclick=()=>{$("delConfirm").hidden=true;$("delBtn").hidden=false};
-$("delYes").onclick=()=>{const id=sel;$("delConfirm").hidden=true;$("delBtn").hidden=false;delete props[id];dirty=false;sel=null;$("drawer").hidden=true;store();renderAll();toast("Deleted")};
+$("delYes").onclick=()=>{const id=sel;document.body.classList.remove("drawer-open");$("delConfirm").hidden=true;$("delBtn").hidden=false;delete props[id];dirty=false;sel=null;$("drawer").hidden=true;store();renderAll();toast("Deleted")};
 $("lockBtn").onclick=async()=>{if(!sel)return;const p=props[sel];if(missing(p).pin){toast("Place the pin first");return}
   props[sel]={...p,pinLocked:!p.pinLocked,pinStatus:p.pinLocked?p.pinStatus:"confirmed",updated:Date.now()};$("pinLocked").value=props[sel].pinLocked?"1":"";$("pinStatus").value=props[sel].pinStatus;
   renderLockUI(props[sel]);renderAll();renderTodo(props[sel]);await store();toast(props[sel].pinLocked?"Pin locked":"Pin unlocked, you can drag it")};
@@ -732,7 +810,7 @@ $("lookupBtn").onclick=async()=>{
 $("importBtn").onclick=()=>$("importFile").click();
 $("importFile").onchange=()=>{
   const f=$("importFile").files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;let kept=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){const old=props[k]||{};const nv={...old,...inc[k],id:k};if(locked(old)||old.pinStatus==="confirmed"){nv.lat=old.lat;nv.lng=old.lng;nv.pinStatus=old.pinStatus;nv.pinLocked=old.pinLocked;kept++} if(old.boundary){nv.boundary=old.boundary;nv.boundaryStatus=old.boundaryStatus;nv.plotArea=old.plotArea}props[k]=nv;n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`+(kept?`, ${kept} confirmed pin${kept===1?"":"s"} kept`:""))}catch(e){toast("That file could not be read")}};
+  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result);const inc=d.properties||d;let n=0;let kept=0;for(const k in inc){if(inc[k]&&typeof inc[k]==="object"){const old=props[k]||{};const nv={...old,...inc[k],id:k};if(locked(old)||old.pinStatus==="confirmed"){nv.lat=old.lat;nv.lng=old.lng;nv.pinStatus=old.pinStatus;nv.pinLocked=old.pinLocked;kept++} if(old.boundary){nv.boundary=old.boundary;nv.boundaryStatus=old.boundaryStatus;nv.plotArea=old.plotArea} if(old.certCode){nv.certCode=old.certCode;nv.certStatus=old.certStatus;nv.certMb=old.certMb}props[k]=nv;n++}}store();renderAll();toast(`Imported ${n} propert${n===1?"y":"ies"}`+(kept?`, ${kept} confirmed pin${kept===1?"":"s"} kept`:""))}catch(e){toast("That file could not be read")}};
   r.readAsText(f); $("importFile").value="";
 };
 window.addEventListener("beforeunload",()=>{if(dirty)save()});
