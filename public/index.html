@@ -580,7 +580,7 @@ async function openParcel(fp,latlng){
 async function attachParcel(id,d){
   if(!id||!props[id]) return; const p=props[id];
   const c=d.ring&&d.ring.length>2?d.ring.reduce((a,q)=>[a[0]+q[0]/d.ring.length,a[1]+q[1]/d.ring.length],[0,0]):null;
-  const upd={...p,cadNic:d.label,cadSection:d.section,cadParcel:d.parcel,cadArea:d.area,updated:Date.now(),log:[...(p.log||[]),{date:today(),text:"Cadastre plot "+d.label+" attached"+(d.section?", section "+d.section+" parcel "+d.parcel:"")+", "+fmtArea(d.area||0)+"."}]};
+  const upd={...p,cadNic:d.label,cadSection:d.section,cadParcel:d.parcel,cadArea:d.area,pinLocked:true,pinStatus:"confirmed",updated:Date.now(),log:[...(p.log||[]),{date:today(),text:"Cadastre plot "+d.label+" attached"+(d.section?", section "+d.section+" parcel "+d.parcel:"")+", "+fmtArea(d.area||0)+"."}]};
   if(d.ring&&d.ring.length>2){upd.boundary=d.ring;upd.boundaryStatus="cadastre";upd.plotArea=d.area}
   if(c&&missing(p).pin){upd.lat=c[0].toFixed(6);upd.lng=c[1].toFixed(6);upd.pinStatus="approximate"}
   props[id]=upd; await store(); renderAll(); if(sel===id) open(id); toast("Plot attached");
@@ -615,10 +615,10 @@ function renderPins(){
     const lat=parseFloat(p.lat),lng=parseFloat(p.lng);
     if(isNaN(lat)||isNaN(lng)){if(markers[p.id]){map.removeLayer(markers[p.id]);delete markers[p.id]}continue}
     let m=markers[p.id];
-    if(!m){m=L.marker([lat,lng],{icon:icon(p),draggable:!locked(p)});m.on("click",()=>{if(!placing)open(p.id)});
+    if(!m){m=L.marker([lat,lng],{icon:icon(p),draggable:sel===p.id&&!locked(p)});m.on("click",()=>{if(!placing)open(p.id)});
       m.on("dragend",e=>{const ll=e.target.getLatLng();props[p.id]={...props[p.id],lat:ll.lat.toFixed(6),lng:ll.lng.toFixed(6),pinStatus:"confirmed",updated:Date.now()};store();renderPins();if(sel===p.id){$("lat").value=props[p.id].lat;$("lng").value=props[p.id].lng;$("pinStatus").value="confirmed";renderTodo(props[p.id])}});
       m.addTo(map);markers[p.id]=m}
-    else{m.setLatLng([lat,lng]);m.setIcon(icon(p));if(m.dragging){locked(p)?m.dragging.disable():m.dragging.enable()}}
+    else{m.setLatLng([lat,lng]);m.setIcon(icon(p));if(m.dragging){(sel===p.id&&!locked(p))?m.dragging.enable():m.dragging.disable()}}
     m.bindTooltip(title(p),{direction:"right",offset:[10,-14]});
   }
   const unplaced=Object.values(props).filter(p=>isNaN(parseFloat(p.lat))).length;
@@ -746,7 +746,7 @@ function renderAll(){renderList();renderPins();renderBoundaries()}
 // ---------- drawer ----------
 function open(id){document.body.classList.add("drawer-open");
   if(dirty&&sel&&sel!==id) save();
-  sel=id; const p=props[id]; if(!p) return;
+  sel=id;renderPins(); const p=props[id]; if(!p) return;
   placing=false; adding=false; $("locateBtn").classList.remove("on");
   for(const f of FIELDS){$(f).value=f==="pinLocked"?(p.pinLocked?"1":""):(p[f]??(f==="status"?"none":""))}
   $("dTitle").textContent=title(p);
