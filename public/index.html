@@ -446,8 +446,13 @@ const plotM2=p=>+(p.cadArea||p.plotArea||(p.boundary&&p.boundary.length>2?areaM2
 const SIZE_NAME={S:"Small",M:"Medium",L:"Large",XL:"Extra large"};
 function sizeOf(p){if(p.size)return {s:p.size,inferred:false};const b=+p.beds;if(!b)return {s:"",inferred:true};return {s:b<3?"S":b===3?"M":b<=5?"L":"XL",inferred:true}}
 function fitsBrief(p){const {s}=sizeOf(p),b=+p.beds;if(s==="S"||(b&&b<3))return false;if(!s&&!b)return null;return true}
-// Rough rule of thumb for Azeitão quintas and villas, 2026 asking levels. Base by bedrooms plus land beyond a garden plot. Always shown as indicative.
-function guessValue(p){const b=+p.beds||3,a=plotM2(p);const base=350000+110000*b+Math.min(600000,Math.max(0,a-2000)*12);const r=v=>Math.round(v/25000)*25000;return {low:r(base*.85),high:r(base*1.25),why:(p.beds?b+" beds":"3 beds assumed")+(a?", "+fmtArea(a):"")}}
+// Valuation from three Azeitão quinta comps on Idealista, Oct 2026 (asking €1.95m, €2.98m, €2.5m, all good condition with pools).
+// Model of asking price: €5,000 per m² built, land at €80/m² for the first hectare then €25/m². Fits the comps within 6 to 13%.
+// Sellers ask 20 to 30% above what they take, so the range shown is 75% to 85% of the modelled asking.
+const VAL={perM2:5000,landNear:80,landFar:25,builtPerBed:45,builtBase:60,lowK:0.75,highK:0.85};
+function guessValue(p){const b=+p.beds||3,a=plotM2(p),built=+p.area||(VAL.builtBase+VAL.builtPerBed*b);
+  const land=Math.min(a,10000)*VAL.landNear+Math.max(0,a-10000)*VAL.landFar;const ask=VAL.perM2*built+land;const r=v=>Math.round(v/25000)*25000;
+  return {ask:r(ask),low:r(ask*VAL.lowK),high:r(ask*VAL.highK),why:(p.area?built+" m² built":built+" m² built assumed from "+(p.beds?b+" beds":"3 beds"))+(a?", "+fmtArea(a):", no plot")+", good condition with pool assumed"}}
 // Priority score 0-100. Your own rating weighs most, then what we know, then fit and momentum.
 function score(p){
   if(p.status==="declined"||p.status==="bought")return {total:0,why:[sLabel(p.status)]};
@@ -774,8 +779,8 @@ function renderCard(p){
   const r=+p.myRating||0;$("stars").innerHTML=[1,2,3,4,5].map(i=>`<button type="button" class="${i<=r?"on":""}" data-r="${i}" aria-label="Rate ${i}">★</button>`).join("");
   const lo=+p.estValue||0,hi=+p.estHigh||0;
   if(lo||hi)$("sumVal").innerHTML="<b>"+(lo&&hi?fmtEur(lo)+" to "+fmtEur(hi):fmtEur(lo||hi))+"</b>"+(p.offer?", offer "+fmtEur(+p.offer):"")+(p.valNote?"<br>"+p.valNote:"");
-  else{const g=guessValue(p);$("sumVal").innerHTML="Indicative "+fmtEur(g.low)+" to "+fmtEur(g.high)+"<br><span>rule of thumb, "+g.why+"</span> · <button type=\"button\" id=\"useGuess\">use it</button>";
-    $("useGuess").onclick=()=>{$("estValue").value=g.low;$("estHigh").value=g.high;$("valNote").value="Rule of thumb, "+g.why+", to be checked";setDirty(true);save();renderTodo(current())}}
+  else{const g=guessValue(p);$("sumVal").innerHTML="Indicative "+fmtEur(g.low)+" to "+fmtEur(g.high)+" (asks ~"+fmtEur(g.ask)+")<br><span>from Azeitão comps, "+g.why+"</span> · <button type=\"button\" id=\"useGuess\">use it</button>";
+    $("useGuess").onclick=()=>{$("estValue").value=g.low;$("estHigh").value=g.high;$("valNote").value="From Azeitão comps Oct 2026, "+g.why+", asking equivalent "+fmtEur(g.ask)+", to be checked";setDirty(true);save();renderTodo(current())}}
 }
 $("stars").onclick=e=>{const b=e.target.closest("button");if(!b||!sel)return;const r=+b.dataset.r;$("myRating").value=(+$("myRating").value===r?"":String(r));setDirty(true);save();renderTodo(current())};
 $("keyBtn").onclick=()=>$("legend").classList.toggle("show");

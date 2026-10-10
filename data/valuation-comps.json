@@ -1,0 +1,9 @@
+{
+  "note": "Idealista asking prices used to calibrate the app's indicative valuation, collected 2026-10-10. Sam's view is that asking sits 20 to 30% above what sellers take.",
+  "model": {"built_eur_per_m2": 5000, "land_eur_per_m2_first_ha": 80, "land_eur_per_m2_beyond": 25, "would_take_low": 0.75, "would_take_high": 0.85, "built_m2_when_unknown": "60 + 45 per bedroom"},
+  "comps": [
+    {"url": "https://www.idealista.pt/imovel/34645078/", "asking": 1950000, "built_m2": 280, "plot_m2": 5500, "beds": 5, "pool": true, "condition": "renovated 2022, guest house, solar", "built_year": 2001, "modelled": 1840000},
+    {"url": "https://www.idealista.pt/imovel/35194726/", "asking": 2980000, "built_m2": 348, "plot_m2": 34600, "beds": 4, "pool": true, "condition": "good, vineyard and orchards, Vila Nogueira hillside", "modelled": 3155000},
+    {"url": "https://www.idealista.pt/imovel/32730258/", "asking": 2500000, "built_m2": 250, "plot_m2": 15000, "beds": 5, "pool": true, "condition": "good, contemporary villa, wooded 1.5 ha", "modelled": 2175000}
+  ]
+}
