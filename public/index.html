@@ -141,6 +141,14 @@ legend{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--
 @media (max-width:760px){header .sub{display:none}header{gap:8px;padding:8px 12px}.counts{display:none}header h1{font-size:17px}input,select,textarea{font-size:16px}.rows{padding-bottom:80px}.drawer form{padding-bottom:90px}}
 .cert{border-top:1px dashed var(--line);margin-top:8px;padding-top:8px}.certinfo{font-size:12.5px;color:var(--muted);line-height:1.5;margin:4px 0}.certinfo b{color:var(--ink)}.certbtns{display:flex;gap:6px;flex-wrap:wrap}
 input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity:1}
+.nsug-wrap{position:relative}
+.nsug{position:absolute;left:0;right:0;top:100%;z-index:10;background:var(--paper);border:1px solid var(--line);border-top:0;border-radius:0 0 8px 8px;max-height:240px;overflow:auto;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.nsug .sg{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:none;padding:9px 11px;cursor:pointer}
+.nsug .sg:first-child{border-top:0}
+.nsug .sg:hover,.nsug .sg.on{background:var(--bg)}
+.nsug .sg b{font-weight:600;display:block;font-size:14px}
+.nsug .sg span{font-size:11.5px;color:var(--muted)}
+.nsug .sghdr{padding:7px 11px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
 
 /* record card */
 .sum{padding:12px 16px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;background:var(--paper)}
@@ -239,7 +247,7 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
   <div class="card">
     <h2>Add a property</h2>
     <p class="muted">Fill in whatever you have. Anything missing becomes a to-do on the record.</p>
-    <div class="f"><label for="nName">Villa or listing name</label><input id="nName" placeholder="Name on the gate or listing"></div>
+    <div class="f nsug-wrap"><label for="nName">Villa or listing name</label><input id="nName" placeholder="Name on the gate or listing" autocomplete="off"><div class="nsug" id="nSug" hidden></div></div>
     <div class="f"><label for="nLink">Airbnb, Booking or other listing link</label><input id="nLink" placeholder="https://www.airbnb.com/rooms/..."></div>
     <div class="f"><label for="nAddr">Address or place</label><input id="nAddr" placeholder="Rua ..., Vila Nogueira de Azeitão, or a landmark"></div>
     <div class="f"><label for="nAL">AL registration number, if known</label><input id="nAL" placeholder="Number/AL"></div>
@@ -915,7 +923,36 @@ $("addBtn").onclick=()=>{
   for(const id of ["nName","nLink","nAddr","nAL"]) $(id).value="";
   $("nNote").textContent=""; $("addModal").hidden=false; $("nName").focus();
 };
-$("nCancel").onclick=()=>{$("addModal").hidden=true};
+// Typeahead against already-logged properties, so a house found on the ground can be matched to an
+// existing record (often from the AL register) that has no pin yet, instead of creating a duplicate.
+function nSuggest(){
+  const q=norm($("nName").value.trim()); const box=$("nSug");
+  if(q.length<2){box.hidden=true;box.innerHTML="";return}
+  const hits=Object.values(props).filter(p=>norm(p.name).includes(q)||norm(p.rnalName).includes(q))
+    .map(p=>({p,unloc:missing(p).pin||missing(p).confirm?0:1,unrated:+p.myRating?1:0}))
+    .sort((a,b)=>a.unloc-b.unloc||a.unrated-b.unrated||title(a.p).localeCompare(title(b.p)))
+    .slice(0,8);
+  if(!hits.length){box.hidden=true;box.innerHTML="";return}
+  let html='<div class="sghdr">Already logged, tap to place one here</div>';
+  for(const {p} of hits){const m=missing(p);
+    const hint=[p.al?p.al:((p.source||"register")!=="register"?"not on AL":null),m.pin?"no location":m.confirm?"location approximate":"located",+p.myRating?"rated "+p.myRating:"not rated"].filter(Boolean).join(" · ");
+    html+='<button type="button" class="sg" data-id="'+p.id+'"><b>'+title(p).replace(/</g,"&lt;")+'</b><span>'+hint+'</span></button>';
+  }
+  box.innerHTML=html; box.hidden=false;
+  box.querySelectorAll(".sg").forEach(b=>b.onclick=()=>chooseExisting(b.dataset.id));
+}
+function chooseExisting(id){
+  $("addModal").hidden=true; $("nSug").hidden=true; adding=false; pendingAdd=null; $("addBtn").classList.remove("on");
+  open(id);
+  placing=true; $("locateBtn").classList.add("on"); renderPins();
+  const p=props[id],lat=parseFloat(p.lat),lng=parseFloat(p.lng); if(!isNaN(lat))map.setView([lat,lng],Math.max(map.getZoom(),17));
+  if(window.innerWidth<=760){$("drawer").hidden=true;$("list").hidden=true}
+  toast("Tap the house on the map to place "+title(p));
+}
+$("nName").addEventListener("input",nSuggest);
+$("nName").addEventListener("focus",nSuggest);
+$("nName").addEventListener("blur",()=>setTimeout(()=>$("nSug").hidden=true,180));
+$("nCancel").onclick=()=>{$("addModal").hidden=true;$("nSug").hidden=true};
 $("addModal").addEventListener("click",e=>{if(e.target===$("addModal"))$("addModal").hidden=true});
 $("nLink").addEventListener("change",()=>{const v=$("nLink").value.trim();if(!v)return;const info=parseListing(v);if(info.nameHint&&!$("nName").value)$("nName").value=info.nameHint;$("nNote").textContent=info.site?`${info.site} link recognised.`:""});
 function gatherNew(){
