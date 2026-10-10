@@ -551,8 +551,10 @@ const esri=n=>"https://server.arcgisonline.com/ArcGIS/rest/services/"+n+"/MapSer
 const sat=L.tileLayer(esri("World_Imagery"),{maxZoom:19,attribution:"Imagery &copy; Esri"}).addTo(map);
 const streets=L.tileLayer(esri("World_Street_Map"),{maxZoom:19,attribution:"Tiles &copy; Esri"});
 const topo=L.tileLayer(esri("World_Topo_Map"),{maxZoom:19,attribution:"Tiles &copy; Esri"});
-const roads=L.tileLayer(esri("Reference/World_Transportation"),{maxZoom:19,pane:"overlayPane"}).addTo(map);
-const places=L.tileLayer(esri("Reference/World_Boundaries_and_Places"),{maxZoom:19,pane:"overlayPane"}).addTo(map);
+// Reference overlays off by default: they draw gold roads and green admin/park boundary lines
+// that get mistaken for plot lines. The red cadastre overlay is the only boundary shown by default.
+const roads=L.tileLayer(esri("Reference/World_Transportation"),{maxZoom:19,pane:"overlayPane"});
+const places=L.tileLayer(esri("Reference/World_Boundaries_and_Places"),{maxZoom:19,pane:"overlayPane"});
 const layerCtl=L.control.layers({"Satellite":sat,"Streets":streets,"Topographic":topo},{"Road names":roads,"Place names":places},{position:"topright"}).addTo(map);
 // cadastre parcels, relayed through /api/cad
 let cad=null, cadToken="", cadSel=null, cadHighlight=null;
@@ -651,15 +653,9 @@ function areaM2(pts){ // spherical polygon area, good enough for plots
 }
 const fmtArea=m2=>m2>=10000?(m2/10000).toFixed(2)+" ha":Math.round(m2)+" m²";
 function renderBoundaries(){
-  // Only outline the open record's plot. Every other plot is shown by the red cadastre overlay,
-  // so drawing all of them here just doubled the lines in clashing colours.
-  for(const id in boundaryLayers){if(id!==sel||!props[id]||!props[id].boundary){map.removeLayer(boundaryLayers[id]);delete boundaryLayers[id]}}
-  const p=sel&&props[sel];
-  if(!p||!p.boundary||p.boundary.length<3) return;
-  const style={color:lightHex(p),weight:3,fillColor:sColor(p.status),fillOpacity:.18,dashArray:(p.boundaryStatus==="confirmed"||p.boundaryStatus==="cadastre")?null:"6 4"};
-  let l=boundaryLayers[p.id]; if(!l){l=L.polygon(p.boundary,style).addTo(map);boundaryLayers[p.id]=l}
-  else{l.setLatLngs(p.boundary);l.setStyle(style)}
-  l.bindTooltip(title(p)+" · "+fmtArea(areaM2(p.boundary)),{sticky:true});
+  // Plot lines come only from the red cadastre overlay. The app does not draw its own boundary
+  // polygons any more, they clashed with the cadastre lines. Clear any that are still on the map.
+  for(const id in boundaryLayers){map.removeLayer(boundaryLayers[id]);delete boundaryLayers[id]}
 }
 function renderBoundaryUI(p){
   const has=p.boundary&&p.boundary.length>=3;
