@@ -651,14 +651,15 @@ function areaM2(pts){ // spherical polygon area, good enough for plots
 }
 const fmtArea=m2=>m2>=10000?(m2/10000).toFixed(2)+" ha":Math.round(m2)+" m²";
 function renderBoundaries(){
-  for(const id in boundaryLayers){if(!props[id]||!props[id].boundary){map.removeLayer(boundaryLayers[id]);delete boundaryLayers[id]}}
-  for(const p of Object.values(props)){
-    if(!p.boundary||p.boundary.length<3) continue;
-    const style={color:lightHex(p),weight:p.id===sel?3:2,fillColor:sColor(p.status),fillOpacity:p.id===sel?.25:.12,dashArray:(p.boundaryStatus==="confirmed"||p.boundaryStatus==="cadastre")?null:"6 4"};
-    let l=boundaryLayers[p.id]; if(!l){l=L.polygon(p.boundary,style).addTo(map);l.on("click",()=>{if(!drawing&&!placing&&!adding)open(p.id)});boundaryLayers[p.id]=l}
-    else{l.setLatLngs(p.boundary);l.setStyle(style)}
-    l.bindTooltip(title(p)+" · "+fmtArea(areaM2(p.boundary)),{sticky:true});
-  }
+  // Only outline the open record's plot. Every other plot is shown by the red cadastre overlay,
+  // so drawing all of them here just doubled the lines in clashing colours.
+  for(const id in boundaryLayers){if(id!==sel||!props[id]||!props[id].boundary){map.removeLayer(boundaryLayers[id]);delete boundaryLayers[id]}}
+  const p=sel&&props[sel];
+  if(!p||!p.boundary||p.boundary.length<3) return;
+  const style={color:lightHex(p),weight:3,fillColor:sColor(p.status),fillOpacity:.18,dashArray:(p.boundaryStatus==="confirmed"||p.boundaryStatus==="cadastre")?null:"6 4"};
+  let l=boundaryLayers[p.id]; if(!l){l=L.polygon(p.boundary,style).addTo(map);boundaryLayers[p.id]=l}
+  else{l.setLatLngs(p.boundary);l.setStyle(style)}
+  l.bindTooltip(title(p)+" · "+fmtArea(areaM2(p.boundary)),{sticky:true});
 }
 function renderBoundaryUI(p){
   const has=p.boundary&&p.boundary.length>=3;
@@ -746,7 +747,7 @@ function renderAll(){renderList();renderPins();renderBoundaries()}
 // ---------- drawer ----------
 function open(id){document.body.classList.add("drawer-open");
   if(dirty&&sel&&sel!==id) save();
-  sel=id;renderPins(); const p=props[id]; if(!p) return;
+  sel=id;renderPins();renderBoundaries(); const p=props[id]; if(!p) return;
   placing=false; adding=false; $("locateBtn").classList.remove("on");
   for(const f of FIELDS){$(f).value=f==="pinLocked"?(p.pinLocked?"1":""):(p[f]??(f==="status"?"none":""))}
   $("dTitle").textContent=title(p);
