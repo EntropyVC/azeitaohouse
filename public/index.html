@@ -153,11 +153,11 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
 .meter i{display:block;height:8px;border-radius:3px;background:var(--line)}
 .meter .ok i{background:var(--s-bought)}
 .meter .ok{color:var(--ink)}
-.sumrow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.sumrow{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .stars{display:flex;gap:2px}
 .stars button{border:0;background:none;font-size:22px;line-height:1;padding:0 2px;color:var(--line);cursor:pointer}
 .stars button.on{color:#d79a1e}
-.sumval{font-size:13px;color:var(--muted);text-align:right}
+.sumval{font-size:13px;color:var(--muted);text-align:left}
 .sumval b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
 .sumval button{border:0;background:none;color:var(--accent);font-size:12px;padding:0;cursor:pointer;text-decoration:underline}
 .primact{width:100%;padding:11px 14px;font-size:15px;font-weight:600}
@@ -178,6 +178,16 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
 .row .score{font-size:12px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 6px;display:inline-block;margin-bottom:3px}
 .row .why{color:var(--muted);font-size:11.5px;margin-top:2px}
 @media (max-width:760px){.sumrow{flex-direction:column;align-items:flex-start;gap:6px}.sumval{text-align:left}.sumtext{font-size:15px}.row .addr{font-size:15px}.row .meta{font-size:13px}}
+
+.crit{display:flex;flex-direction:column;gap:6px}
+.crit .cr{display:grid;grid-template-columns:62px 1fr;align-items:center;gap:8px}
+.crit .cl{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--paper)}
+.seg button{flex:1;border:0;background:none;padding:7px 2px;font-size:12px;color:var(--muted);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--ink);color:var(--paper)}
+.seg button.unset{color:var(--muted);font-style:italic}
+.budget{font-weight:600}.budget.over{color:var(--s-declined)}.budget.ok{color:var(--s-bought)}.budget.near{color:var(--s-letter)}
 </style>
 </head>
 <body>
@@ -286,8 +296,9 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
     </div>
     <div class="sum" id="sum">
       <div class="sumtop"><span class="slight" id="sumLight"></span><div class="sumtext" id="sumText"></div></div>
-      <div class="meter" id="meter"></div>
+      <div class="crit" id="crit"></div>
       <div class="sumrow"><div class="stars" id="stars" title="Your own rating from what you have seen"></div><div class="sumval" id="sumVal"></div></div>
+      <div class="meter" id="meter"></div>
       <button type="button" class="btn primary primact" id="primaryAct"></button>
     </div>
     <div class="todo" id="todo"></div>
@@ -308,6 +319,7 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
           <div class="f"><label for="type">Type</label><select id="type" name="type"><option>Moradia</option><option>Apartamento</option><option>Quinta</option><option>Terreno</option><option>Other</option></select></div>
         </div>
         <div class="f"><label for="size">House size</label><select id="size" name="size"><option value="">Not set, inferred from bedrooms</option><option value="S">Small, under 3 bedrooms or under 150 m²</option><option value="M">Medium, 3 bedrooms, 150 to 250 m²</option><option value="L">Large, 4 to 5 bedrooms, 250 to 400 m²</option><option value="XL">Extra large, 5 or more bedrooms, over 400 m²</option></select></div>
+        <div class="f"><label for="land">Land, size and position</label><select id="land" name="land"><option value="">Not judged</option><option value="poor">Poor, small or hemmed in</option><option value="fair">Fair</option><option value="good">Good, private with space</option><option value="prime">Prime, views and room to grow</option></select></div>
         <div class="f"><label for="condition">Condition</label><select id="condition" name="condition"><option value="">Not seen, good assumed</option><option value="reno">Needs renovation</option><option value="dated">Dated but livable</option><option value="good">Good</option><option value="excellent">Excellent, recently renovated or high spec</option></select></div>
         <div class="g2">
           <div class="f"><label for="beds">Bedrooms</label><input id="beds" name="beds" type="number" min="0"></div>
@@ -407,7 +419,7 @@ const SB_URL="https://onmuenuokmiwmonfdozh.supabase.co", SB_KEY="sb_publishable_
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let me=null, canWrite=true;
 const STATUSES=[["none","Not contacted","--s-none"],["letter","Letter sent","--s-letter"],["talks","In talks","--s-talks"],["offer","Offer made","--s-offer"],["declined","Declined","--s-declined"],["bought","Bought","--s-bought"]];
-const FIELDS=["name","rnalName","source","address","pinStatus","pinLocked","cadSection","cadParcel","cadArea","cadNic","certCode","certStatus","al","type","size","condition","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","estHigh","estAsk","offer","myRating","valNote","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
+const FIELDS=["name","rnalName","source","address","pinStatus","pinLocked","cadSection","cadParcel","cadArea","cadNic","certCode","certStatus","al","type","size","condition","land","beds","area","lat","lng","listing","descricao","artigo","charges","estValue","estHigh","estAsk","offer","myRating","valNote","owner","ownerIs","ownerAddr","phone","email","keyholder","status","nextDate","nextAction","notes"];
 const $=id=>document.getElementById(id);
 const norm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let listTab=localStorage.getItem("listTab")||"focus";
@@ -438,7 +450,7 @@ const light=p=>{const r=readiness(p);return r===3?"green":r===0?"red":"amber"};
 const LIGHT={green:"var(--s-bought)",amber:"var(--s-letter)",red:"var(--s-declined)"};
 const lightHex=p=>getComputedStyle(document.documentElement).getPropertyValue({green:"--s-bought",amber:"--s-letter",red:"--s-declined"}[light(p)]).trim();
 // What we know about a record, in the order shown on the meter
-const BITS=[["Name",p=>!!(p.name||p.rnalName)],["Pin",p=>p.pinStatus==="confirmed"],["Plot",p=>!!p.cadParcel],["Owner",p=>!!p.owner],["Contact",p=>!!(p.phone||p.email||p.ownerAddr)],["Size",p=>!!sizeOf(p).s],["Value",p=>!!(+p.estValue||+p.estHigh)],["Rating",p=>+p.myRating>0]];
+const BITS=[["Size",p=>!!sizeOf(p).s],["Cond.",p=>!!p.condition],["Land",p=>!!p.land],["Value",p=>!!(+p.estValue||+p.estHigh)],["Pin",p=>p.pinStatus==="confirmed"],["Plot",p=>!!p.cadParcel],["Owner",p=>!!p.owner],["Contact",p=>!!(p.phone||p.email||p.ownerAddr)]];
 const bits=p=>BITS.map(([k,f])=>[k,!!f(p)]);
 const distKm=p=>{const lat=parseFloat(p.lat),lng=parseFloat(p.lng);if(isNaN(lat))return null;const R=6371,dLat=(lat-HOME[0])*Math.PI/180,dLng=(lng-HOME[1])*Math.PI/180,a=Math.sin(dLat/2)**2+Math.cos(HOME[0]*Math.PI/180)*Math.cos(lat*Math.PI/180)*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(a))};
 const fmtDist=d=>d<1?Math.round(d*100)*10+" m":d.toFixed(1)+" km";
@@ -459,18 +471,25 @@ function guessValue(p){const b=+p.beds||3,a=plotM2(p),built=+p.area||(VAL.builtB
   const cond=p.condition||"good",rate=VAL.perM2[cond]*(VAL.sizeK[sizeOf(p).s]||1);
   const land=Math.min(a,10000)*VAL.landNear+Math.max(0,a-10000)*VAL.landFar;const ask=rate*Math.min(built,VAL.builtCap)+VAL.perM2Beyond*Math.max(0,built-VAL.builtCap)+land;const r=v=>Math.round(v/25000)*25000;
   return {ask:r(ask),low:r(ask*VAL.lowK),high:r(ask*VAL.highK),rate:Math.round(rate),why:(p.area?built+" m² built":built+" m² built assumed from "+(p.beds?b+" beds":"3 beds"))+" at €"+Math.round(rate).toLocaleString("en")+"/m² ("+COND_NAME[cond]+(p.condition?"":" assumed")+(sizeOf(p).s?", "+SIZE_NAME[sizeOf(p).s].toLowerCase():"")+")"+(a?", "+fmtArea(a)+" land":", no plot")}}
-// Priority score 0-100. Your own rating weighs most, then what we know, then fit and momentum.
+const LAND_NAME={poor:"poor land",fair:"fair land",good:"good land",prime:"prime land"};
+const landPts=p=>p.land?{poor:0,fair:5,good:9,prime:12}[p.land]:(()=>{const a=plotM2(p);return a>=10000?7:a>=3000?4:a>0?2:0})();
+// Budget fit from the realistic range (stored, else modelled)
+function budgetFit(p){const lo=+p.estValue||0;const g=lo?null:((+p.beds||+p.area)&&plotM2(p)?guessValue(p):null);const low=lo||(g?g.low:0);if(!low)return {pts:4,label:"unpriced",cls:""};
+  if(low<=BUDGET)return {pts:15,label:"within budget",cls:"ok"};if(low<=BUDGET*1.2)return {pts:7,label:"near budget, "+fmtEur(low-BUDGET)+" over",cls:"near"};return {pts:0,label:"over budget by "+fmtEur(low-BUDGET),cls:"over"}}
+// Priority score 0-100. House size, condition and land first, then budget and your rating, then what we know and momentum.
 function score(p){
   if(p.status==="declined"||p.status==="bought")return {total:0,why:[sLabel(p.status)]};
   const m=missing(p),r=+p.myRating||0,why=[];let t=0;const add=(n,w)=>{t+=n;if(w&&n>0)why.push(w)};
-  add(r?r*6:12,r?"rated "+r+"/5":"");
-  add(!m.pin&&!m.confirm?8:0,"located");add(!m.owner?10:0,"owner known");add(!m.contact?10:0,"contact known");add(p.cadParcel?4:0,"");
-  const d=distKm(p);add(d==null?0:d<1?10:d<2?7:d<4?3:0,d!=null&&d<2?fmtDist(d)+" from home":"");
-  const a=plotM2(p);add(a>=10000?8:a>=3000?5:a>0?2:0,a>=10000?fmtArea(a):"");
-  add(/^Private/.test(p.ownerIs||"")?6:/Company|Management/.test(p.ownerIs||"")?1:3,/Company|Management/.test(p.ownerIs||"")?"held via company":"");
-  add({letter:4,talks:10,offer:12}[p.status]||0,p.status&&p.status!=="none"?sLabel(p.status).toLowerCase():"");
-  const sz=sizeOf(p),fit=fitsBrief(p);
-  add({M:4,L:8,XL:8}[sz.s]||0,sz.s&&sz.s!=="S"?SIZE_NAME[sz.s].toLowerCase()+(sz.inferred?" (from beds)":""):"");
+  const sz=sizeOf(p),fit=fitsBrief(p),bf=budgetFit(p);
+  add(bf.pts,bf.label);if(!bf.pts&&bf.label)why.push(bf.label);
+  add({M:5,L:8,XL:8}[sz.s]||0,sz.s&&sz.s!=="S"?SIZE_NAME[sz.s].toLowerCase()+(sz.inferred?" (from beds)":""):"");
+  add(p.condition?{reno:2,dated:5,good:8,excellent:10}[p.condition]:5,p.condition?COND_NAME[p.condition]:"");
+  add(landPts(p),p.land?LAND_NAME[p.land]:(plotM2(p)>=10000?fmtArea(plotM2(p)):""));
+  add(r?r*5:10,r?"rated "+r+"/5":"");
+  const d=distKm(p);add(d==null?0:d<1?6:d<2?4:d<4?2:0,d!=null&&d<2?fmtDist(d)+" from home":"");
+  add(!m.pin&&!m.confirm?4:0,"");add(!m.owner?4:0,"owner known");add(!m.contact?4:0,"");
+  add(/^Private/.test(p.ownerIs||"")?3:/Company|Management/.test(p.ownerIs||"")?1:2,/Company|Management/.test(p.ownerIs||"")?"held via company":"");
+  add({letter:2,talks:5,offer:6}[p.status]||0,p.status&&p.status!=="none"?sLabel(p.status).toLowerCase():"");
   if(fit===false){t=t*0.35;why.unshift("below brief")}
   return {total:Math.round(t),why};
 }
@@ -522,6 +541,7 @@ function subscribe(){
 
 // ---------- map ----------
 const HOME=[38.503,-8.992], HOME_ZOOM=14;
+const BUDGET=1600000; // what we can pay, ranking and the card read against it
 const map=L.map("map",{zoomControl:true}).setView(HOME,HOME_ZOOM);
 const esri=n=>"https://server.arcgisonline.com/ArcGIS/rest/services/"+n+"/MapServer/tile/{z}/{y}/{x}";
 const sat=L.tileLayer(esri("World_Imagery"),{maxZoom:19,attribution:"Imagery &copy; Esri"}).addTo(map);
@@ -698,7 +718,7 @@ function renderList(){
   const focus=listTab==="focus";
   const items=Object.values(props).filter(p=>pass(p)&&(!q||norm([p.name,p.rnalName,p.address,p.owner,p.keyholder,p.al,p.notes].join(" ")).includes(q)))
     .sort(focus?((a,b)=>score(b).total-score(a).total||title(a).localeCompare(title(b))):((a,b)=>title(a).localeCompare(title(b))));
-  $("tabNote").textContent=focus?"ranked by priority":"A to Z";
+  $("tabNote").textContent=focus?"ranked for "+fmtEur(BUDGET):"A to Z";
   const rows=$("rows"); rows.innerHTML="";
   if(!items.length){rows.innerHTML=`<div class="empty">${Object.keys(props).length?"Nothing matches that search.":"No properties yet. Click Add property, then click the house on the map."}</div>`}
   for(const p of items){
@@ -773,23 +793,27 @@ function renderCard(p){
   const m=missing(p),L=light(p);
   $("sumLight").style.background="var("+sVar(p.status)+")";$("sumLight").style.setProperty("--ring",LIGHT[L]);
   const a=plotM2(p),d=distKm(p),sc=score(p);
-  const parts=[];
-  parts.push(p.owner?"Owner <b>"+p.owner+"</b>"+(p.ownerIs&&p.ownerIs!=="Unknown"?" ("+p.ownerIs.toLowerCase().replace("private individual, ","")+")":""):"Owner unknown");
-  parts.push(p.email||p.phone?"reachable by "+(p.email?"email":"phone"):p.ownerAddr?"reachable by post":"no contact yet");
-  parts.push(m.pin?"not on the map":m.confirm?"pin approximate":"located"+(d!=null?", "+fmtDist(d)+" from home":""));
+  const parts=[];const sz=sizeOf(p),fit=fitsBrief(p),bf=budgetFit(p);
+  if(p.beds)parts.push(p.beds+" beds");
   if(a)parts.push(fmtArea(a)+(p.cadParcel?" plot":" drawn"));
-  const sz=sizeOf(p),fit=fitsBrief(p);
-  if(sz.s||p.beds)parts.push([p.beds?p.beds+" beds":"",sz.s?SIZE_NAME[sz.s].toLowerCase()+(sz.inferred?" (inferred)":""):""].filter(Boolean).join(", "));
+  parts.push(m.pin?"not on the map":m.confirm?"pin approximate":"located"+(d!=null?", "+fmtDist(d)+" from home":""));
+  parts.push(p.owner?"owner <b>"+(w=>w.length>2?w[0]+" "+w[w.length-1]:w.join(" "))(p.owner.trim().split(/\s+/))+"</b>"+(p.email||p.phone?", reachable":p.ownerAddr?", by post":", no contact"):"owner unknown");
   $("sumText").innerHTML=parts.join(", ")+". "+(p.status&&p.status!=="none"?"<b>"+sLabel(p.status)+"</b>. ":"")+(fit===false?"<b class=\"nofit\">Below brief</b>, under 3 bedrooms or small. ":"")+"Priority <b>"+sc.total+"</b>/100.";
+  const seg=(id,opts,val)=>'<div class="cr"><span class="cl">'+id[0]+'</span><div class="seg" data-f="'+id[1]+'">'+opts.map(([v,l])=>'<button type="button" data-v="'+v+'" class="'+(val===v?"on":"")+'">'+l+'</button>').join("")+'</div></div>';
+  $("crit").innerHTML=seg(["Size","size"],[["S","S"],["M","M"],["L","L"],["XL","XL"]],p.size||(sz.inferred&&sz.s?"":""))+seg(["Condition","condition"],[["reno","Reno"],["dated","Dated"],["good","Good"],["excellent","Excellent"]],p.condition||"")+seg(["Land","land"],[["poor","Poor"],["fair","Fair"],["good","Good"],["prime","Prime"]],p.land||"");
+  if(!p.size&&sz.s){const b=$("crit").querySelector('.seg[data-f="size"] button[data-v="'+sz.s+'"]');if(b){b.classList.add("unset");b.title="Inferred from bedrooms, tap to confirm"}}
   $("meter").innerHTML=bits(p).map(([k,ok])=>`<span class="${ok?"ok":""}"><i></i>${k}</span>`).join("");
   const r=+p.myRating||0;$("stars").innerHTML=[1,2,3,4,5].map(i=>`<button type="button" class="${i<=r?"on":""}" data-r="${i}" aria-label="Rate ${i}">★</button>`).join("");
   const lo=+p.estValue||0,hi=+p.estHigh||0;
   const g=guessValue(p);
-  if(lo||hi)$("sumVal").innerHTML="Realistic <b>"+(lo&&hi?fmtEur(lo)+" to "+fmtEur(hi):fmtEur(lo||hi))+"</b>, asking level ~"+fmtEur(p.estAsk?+p.estAsk:g.ask)+(p.offer?", offer "+fmtEur(+p.offer):"")+(p.valNote?"<br>"+p.valNote:"")+" · <button type=\"button\" id=\"useGuess\">recalculate</button>";
-  else $("sumVal").innerHTML="Realistic <b>"+fmtEur(g.low)+" to "+fmtEur(g.high)+"</b>, asking level ~"+fmtEur(g.ask)+"<br><span>"+g.why+"</span> · <button type=\"button\" id=\"useGuess\">use it</button>";
+  const bl='<span class="budget '+bf.cls+'">'+bf.label+'</span>';
+  if(lo||hi)$("sumVal").innerHTML="Realistic <b>"+(lo&&hi?fmtEur(lo)+" to "+fmtEur(hi):fmtEur(lo||hi))+"</b>, asks ~"+fmtEur(p.estAsk?+p.estAsk:g.ask)+", "+bl+(p.offer?", offer "+fmtEur(+p.offer):"")+" · <button type=\"button\" id=\"useGuess\">recalculate</button>";
+  else if((+p.beds||+p.area)&&a)$("sumVal").innerHTML="Realistic <b>"+fmtEur(g.low)+" to "+fmtEur(g.high)+"</b>, asks ~"+fmtEur(g.ask)+", "+bl+"<br><span>"+g.why+"</span> · <button type=\"button\" id=\"useGuess\">use it</button>";
+  else $("sumVal").innerHTML="Unpriced, needs bedrooms and a plot";
   {
-    $("useGuess").onclick=()=>{$("estValue").value=g.low;$("estHigh").value=g.high;$("estAsk").value=g.ask;$("valNote").value="From Azeitão comps Oct 2026, "+g.why+", to be checked";setDirty(true);save();renderTodo(current())}}
+    if($("useGuess"))$("useGuess").onclick=()=>{$("estValue").value=g.low;$("estHigh").value=g.high;$("estAsk").value=g.ask;$("valNote").value="From Azeitão comps Oct 2026, "+g.why+", to be checked";setDirty(true);save();renderTodo(current())}}
 }
+$("crit").onclick=e=>{const b=e.target.closest("button");if(!b||!sel)return;const f=b.parentElement.dataset.f,v=b.dataset.v;$(f).value=($(f).value===v?"":v);setDirty(true);save();renderTodo(current())};
 $("stars").onclick=e=>{const b=e.target.closest("button");if(!b||!sel)return;const r=+b.dataset.r;$("myRating").value=(+$("myRating").value===r?"":String(r));setDirty(true);save();renderTodo(current())};
 $("keyBtn").onclick=()=>$("legend").classList.toggle("show");
 $("tabFocus").classList.toggle("on",listTab==="focus");$("tabAll").classList.toggle("on",listTab==="all");
