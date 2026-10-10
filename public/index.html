@@ -447,11 +447,12 @@ const SIZE_NAME={S:"Small",M:"Medium",L:"Large",XL:"Extra large"};
 function sizeOf(p){if(p.size)return {s:p.size,inferred:false};const b=+p.beds;if(!b)return {s:"",inferred:true};return {s:b<3?"S":b===3?"M":b<=5?"L":"XL",inferred:true}}
 function fitsBrief(p){const {s}=sizeOf(p),b=+p.beds;if(s==="S"||(b&&b<3))return false;if(!s&&!b)return null;return true}
 // Valuation from three Azeitão quinta comps on Idealista, Oct 2026 (asking €1.95m, €2.98m, €2.5m, all good condition with pools).
-// Model of asking price: €5,000 per m² built, land at €80/m² for the first hectare then €25/m². Fits the comps within 6 to 13%.
+// Model of asking price: €5,000 per m² built up to 300 m² then €1,000, land at €80/m² for the first hectare then €25/m². Fits the three within 6 to 13%.
+// A fourth comp (T7, 582 m², 1 ha, asking €1.75m) sits far below the model, big dated floor plates do not scale, hence the cap.
 // Sellers ask 20 to 30% above what they take, so the range shown is 75% to 85% of the modelled asking.
-const VAL={perM2:5000,landNear:80,landFar:25,builtPerBed:45,builtBase:60,lowK:0.75,highK:0.85};
+const VAL={perM2:5000,perM2Beyond:1000,builtCap:300,landNear:80,landFar:25,builtPerBed:45,builtBase:60,lowK:0.75,highK:0.85};
 function guessValue(p){const b=+p.beds||3,a=plotM2(p),built=+p.area||(VAL.builtBase+VAL.builtPerBed*b);
-  const land=Math.min(a,10000)*VAL.landNear+Math.max(0,a-10000)*VAL.landFar;const ask=VAL.perM2*built+land;const r=v=>Math.round(v/25000)*25000;
+  const land=Math.min(a,10000)*VAL.landNear+Math.max(0,a-10000)*VAL.landFar;const ask=VAL.perM2*Math.min(built,VAL.builtCap)+VAL.perM2Beyond*Math.max(0,built-VAL.builtCap)+land;const r=v=>Math.round(v/25000)*25000;
   return {ask:r(ask),low:r(ask*VAL.lowK),high:r(ask*VAL.highK),why:(p.area?built+" m² built":built+" m² built assumed from "+(p.beds?b+" beds":"3 beds"))+(a?", "+fmtArea(a):", no plot")+", good condition with pool assumed"}}
 // Priority score 0-100. Your own rating weighs most, then what we know, then fit and momentum.
 function score(p){
