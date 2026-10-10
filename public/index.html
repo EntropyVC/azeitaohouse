@@ -785,8 +785,9 @@ function renderCard(p){
   const r=+p.myRating||0;$("stars").innerHTML=[1,2,3,4,5].map(i=>`<button type="button" class="${i<=r?"on":""}" data-r="${i}" aria-label="Rate ${i}">★</button>`).join("");
   const lo=+p.estValue||0,hi=+p.estHigh||0;
   const g=guessValue(p);
-  if(lo||hi)$("sumVal").innerHTML="Realistic <b>"+(lo&&hi?fmtEur(lo)+" to "+fmtEur(hi):fmtEur(lo||hi))+"</b>, asking level ~"+fmtEur(p.estAsk?+p.estAsk:g.ask)+(p.offer?", offer "+fmtEur(+p.offer):"")+(p.valNote?"<br>"+p.valNote:"");
-  else{$("sumVal").innerHTML="Realistic <b>"+fmtEur(g.low)+" to "+fmtEur(g.high)+"</b>, asking level ~"+fmtEur(g.ask)+"<br><span>"+g.why+"</span> · <button type=\"button\" id=\"useGuess\">use it</button>";
+  if(lo||hi)$("sumVal").innerHTML="Realistic <b>"+(lo&&hi?fmtEur(lo)+" to "+fmtEur(hi):fmtEur(lo||hi))+"</b>, asking level ~"+fmtEur(p.estAsk?+p.estAsk:g.ask)+(p.offer?", offer "+fmtEur(+p.offer):"")+(p.valNote?"<br>"+p.valNote:"")+" · <button type=\"button\" id=\"useGuess\">recalculate</button>";
+  else $("sumVal").innerHTML="Realistic <b>"+fmtEur(g.low)+" to "+fmtEur(g.high)+"</b>, asking level ~"+fmtEur(g.ask)+"<br><span>"+g.why+"</span> · <button type=\"button\" id=\"useGuess\">use it</button>";
+  {
     $("useGuess").onclick=()=>{$("estValue").value=g.low;$("estHigh").value=g.high;$("estAsk").value=g.ask;$("valNote").value="From Azeitão comps Oct 2026, "+g.why+", to be checked";setDirty(true);save();renderTodo(current())}}
 }
 $("stars").onclick=e=>{const b=e.target.closest("button");if(!b||!sel)return;const r=+b.dataset.r;$("myRating").value=(+$("myRating").value===r?"":String(r));setDirty(true);save();renderTodo(current())};
