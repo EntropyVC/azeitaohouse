@@ -1,13 +1,24 @@
 {
   "note": "Idealista asking prices used to calibrate the app's indicative valuation, collected 2026-10-10. Sam's view is that asking sits 20 to 30% above what sellers take.",
   "model": {
-    "built_eur_per_m2": 5000,
+    "built_eur_per_m2_by_condition": {
+      "needs_renovation": 2500,
+      "dated": 3500,
+      "good": 5000,
+      "excellent": 6500
+    },
+    "size_multiplier": {
+      "S": 0.95,
+      "M": 1,
+      "L": 1.05,
+      "XL": 1.1
+    },
+    "built_eur_per_m2_beyond_300": 1000,
     "land_eur_per_m2_first_ha": 80,
     "land_eur_per_m2_beyond": 25,
-    "would_take_low": 0.75,
-    "would_take_high": 0.85,
-    "built_m2_when_unknown": "60 + 45 per bedroom",
-    "built_eur_per_m2_beyond_300": 1000
+    "realistic_low": 0.75,
+    "realistic_high": 0.85,
+    "built_m2_when_unknown": "60 + 45 per bedroom"
   },
   "comps": [
     {
