@@ -459,8 +459,6 @@ function guessValue(p){const b=+p.beds||3,a=plotM2(p),built=+p.area||(VAL.builtB
   const cond=p.condition||"good",rate=VAL.perM2[cond]*(VAL.sizeK[sizeOf(p).s]||1);
   const land=Math.min(a,10000)*VAL.landNear+Math.max(0,a-10000)*VAL.landFar;const ask=rate*Math.min(built,VAL.builtCap)+VAL.perM2Beyond*Math.max(0,built-VAL.builtCap)+land;const r=v=>Math.round(v/25000)*25000;
   return {ask:r(ask),low:r(ask*VAL.lowK),high:r(ask*VAL.highK),rate:Math.round(rate),why:(p.area?built+" m² built":built+" m² built assumed from "+(p.beds?b+" beds":"3 beds"))+" at €"+Math.round(rate).toLocaleString("en")+"/m² ("+COND_NAME[cond]+(p.condition?"":" assumed")+(sizeOf(p).s?", "+SIZE_NAME[sizeOf(p).s].toLowerCase():"")+")"+(a?", "+fmtArea(a)+" land":", no plot")}}
-  const land=Math.min(a,10000)*VAL.landNear+Math.max(0,a-10000)*VAL.landFar;const ask=VAL.perM2*Math.min(built,VAL.builtCap)+VAL.perM2Beyond*Math.max(0,built-VAL.builtCap)+land;const r=v=>Math.round(v/25000)*25000;
-  return {ask:r(ask),low:r(ask*VAL.lowK),high:r(ask*VAL.highK),why:(p.area?built+" m² built":built+" m² built assumed from "+(p.beds?b+" beds":"3 beds"))+(a?", "+fmtArea(a):", no plot")+", good condition with pool assumed"}}
 // Priority score 0-100. Your own rating weighs most, then what we know, then fit and momentum.
 function score(p){
   if(p.status==="declined"||p.status==="bought")return {total:0,why:[sLabel(p.status)]};
