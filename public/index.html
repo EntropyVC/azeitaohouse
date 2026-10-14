@@ -210,6 +210,7 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
       <button type="button" id="exportBtn">Export to file (.json)</button>
       <button type="button" id="exportCsv">Export to spreadsheet (.csv)</button>
       <button type="button" id="importBtn">Import from file</button>
+      <button type="button" id="findCert">Find by certidão code</button>
       <button type="button" id="lookupBtn">Copy owner lookup list</button>
       <button type="button" id="signOut">Sign out</button>
       <input type="file" id="importFile" accept=".json,application/json" hidden>
@@ -283,7 +284,7 @@ input::placeholder,textarea::placeholder{color:#b9b4a8;font-style:italic;opacity
     <div class="tools">
       <div class="tabs" role="tablist"><button type="button" class="tab on" id="tabFocus" data-tab="focus">Focus</button><button type="button" class="tab" id="tabAll" data-tab="all">All</button><span class="tabnote" id="tabNote"></span></div>
       <input id="q" type="search" placeholder="Search address, owner, AL number" aria-label="Search">
-      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option><option value="_green">Green, ready to write</option><option value="_amber">Amber, partly found</option><option value="_red">Red, nothing yet</option><option value="_fits">Fits the brief, 3 beds and medium up</option><option value="_nofit">Below the brief</option><option value="_spotted">Not on the AL register</option></select>
+      <select id="fStatus" aria-label="Filter by status"><option value="">All statuses</option><option value="_nopin">Needs pin on map</option><option value="_confirm">Pin needs confirming</option><option value="_noowner">Needs owner lookup</option><option value="_nocontact">Needs contact details</option><option value="_green">Green, ready to write</option><option value="_amber">Amber, partly found</option><option value="_red">Red, nothing yet</option><option value="_fits">Fits the brief, 3 beds and medium up</option><option value="_nofit">Below the brief</option><option value="_certout">Certidão requested, awaiting</option><option value="_spotted">Not on the AL register</option></select>
     </div>
     <div class="rows" id="rows"></div>
   </aside>
@@ -725,7 +726,7 @@ $("geoBtn").onclick=async()=>{
 // ---------- list ----------
 function renderList(){
   const q=norm($("q").value.trim()), fs=$("fStatus").value;
-  const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:fs==="_spotted"?(p.source||"register")!=="register":fs==="_fits"?fitsBrief(p)===true:fs==="_nofit"?fitsBrief(p)===false:fs==="_green"?light(p)==="green":fs==="_amber"?light(p)==="amber":fs==="_red"?light(p)==="red":m.contact};
+  const pass=p=>{if(!fs)return true;if(fs[0]!=="_")return p.status===fs;const m=missing(p);return fs==="_nopin"?m.pin:fs==="_confirm"?m.confirm:fs==="_noowner"?m.owner:fs==="_spotted"?(p.source||"register")!=="register":fs==="_certout"?(!!p.certCode&&p.certStatus!=="available"&&p.certStatus!=="none"):fs==="_fits"?fitsBrief(p)===true:fs==="_nofit"?fitsBrief(p)===false:fs==="_green"?light(p)==="green":fs==="_amber"?light(p)==="amber":fs==="_red"?light(p)==="red":m.contact};
   const focus=listTab==="focus";
   const items=Object.values(props).filter(p=>pass(p)&&(!q||norm([p.name,p.rnalName,p.address,p.owner,p.keyholder,p.al,p.notes].join(" ")).includes(q)))
     .sort(focus?((a,b)=>score(b).total-score(a).total||title(a).localeCompare(title(b))):((a,b)=>title(a).localeCompare(title(b))));
@@ -989,6 +990,16 @@ $("dataBtn").onclick=e=>{e.stopPropagation();$("dataMenu").hidden=!$("dataMenu")
 document.addEventListener("click",()=>{$("dataMenu").hidden=true});
 function download(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 const stamp=()=>new Date().toISOString().slice(0,10);
+$("findCert").onclick=()=>{$("dataMenu").hidden=true;
+  const raw=prompt("Paste the certidão code or its article number to find the property");
+  if(!raw)return; const q=raw.trim().toUpperCase().replace(/\s/g,"");
+  const art=(q.match(/-(\d+)$/)||[])[1]||(/^\d+$/.test(q)?q:"");
+  let hit=Object.values(props).find(p=>p.certCode&&p.certCode.toUpperCase().replace(/\s/g,"")===q);
+  if(!hit&&art)hit=Object.values(props).find(p=>p.certCode&&(p.certCode.match(/-(\d+)$/)||[])[1]===String(+art));
+  if(!hit&&art)hit=Object.values(props).find(p=>String(p.cadParcel)===String(+art));
+  if(hit){open(hit.id);const lat=parseFloat(hit.lat);if(!isNaN(lat))map.panTo([lat,hit.lng]);toast("Matched "+title(hit))}
+  else toast("No property matches that code. It may not have been requested through the app.");
+};
 $("exportBtn").onclick=()=>download(`azeitao-properties-${stamp()}.json`,JSON.stringify({version:1,exported:new Date().toISOString(),properties:props},null,2),"application/json");
 $("exportCsv").onclick=()=>{
   const cols=["id",...FIELDS,"log"]; const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
